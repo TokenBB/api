@@ -12,7 +12,7 @@ WIP authentication prototype
 one-time use token
 
 
-### Lost password
+#### Lost password
 
 one-time use token
 
