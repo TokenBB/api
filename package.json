@@ -1,9 +1,11 @@
 {
-  "name": "@tokenbb/auth",
+  "name": "@tokenbb/api",
   "version": "0.1.0-alpha",
-  "description": "authentication prototype",
+  "description": "api prototype",
   "main": "index.js",
   "scripts": {
+    "start": "npm run watch",
+    "watch": "nodemon .",
     "test": "standard --fix"
   },
   "repository": {
@@ -21,6 +23,17 @@
   },
   "homepage": "https://github.com/TokenBB/auth#readme",
   "devDependencies": {
+    "nodemon": "^1.18.3",
     "standard": "^11.0.1"
+  },
+  "dependencies": {
+    "@steemit/steem-js": "^0.7.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "level": "^4.0.0",
+    "request": "^2.88.0",
+    "sc2-sdk": "^1.0.2"
   }
 }

@@ -1,35 +1,18 @@
-# auth
+# api
 
-WIP authentication prototype
+WIP tokenbb api prototype
 
-
-## API
-
-
-
-#### Create an account
-
-one-time use token
-
-
-### Lost password
-
-one-time use token
-
-
-#### Login
-
-refreshable token
-
-
-#### Logout
-
-revoke a refreshable token
 
 
 ---
 
 ## notes
+
+#### statuses
+
+1. draft
+2. publish
+3. trash
 
 
 #### OAuth defines four roles 
@@ -69,3 +52,11 @@ or is revoked.
   - refresh token
 
 
+---
+
+
+## Resources
+
+
+- [steemconnect-python-client documentation](https://steemconnect-python-client.readthedocs.io/en/latest/)
+- [OAuth 2.0 Token Introspection RFC](https://tools.ietf.org/html/rfc7662)
