@@ -30,12 +30,12 @@ server.listen(PORT, () => {
 })
 
 function createTopic (req, res) {
-  var { slug, title, content } = req.body
+  var { category, slug, title, content } = req.body
   var postedOn = Date.now()
   var id = `${req.user.name}_${slug}`
   var author = req.user.name
   var status = 'draft'
-  var topic = { status, id, postedOn, author, slug, title, content }
+  var topic = { status, id, postedOn, author, category, slug, title, content }
   var key = `topic:${id}`
 
   db.get(key, (err, value) => {
