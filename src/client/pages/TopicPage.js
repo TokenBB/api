@@ -1,32 +1,43 @@
+var Component = require('nanocomponent')
 var html = require('choo/html')
+var steem = require('../services/steem.service')
 
-module.exports = view
+class TopicPage extends Component {
+  constructor (name, state, emit) {
+    super(name)
 
-function view (state, emit) {
-  var { author, permlink } = state.params
+    this.state = state
+    this.emit = emit
 
-  var topic = state.topics.list.find(t => {
-    return t.permlink === permlink && t.author === author
-  })
+    this.topic = null
 
-  if (!topic) return ''
+    this.reply = this.reply.bind(this)
+  }
 
-  topic.replies = []
+  createElement (state, emit) {
+    if (!this.topic) return html`<div><a class="button is-loading"></a></div>`
 
-  return html`
-    <div>
-      <a href="/">◄ Back</a> 
+    return html`
+      <div>
+        <a href="/">◄ Back</a> 
 
-      <h2 class="title is-1">${topic.title}</h2>
-      <p>${topic.category}</p>
+        <h2 class="title is-1">${this.topic.title}</h2>
+        <p class="subtitle is-5">${this.topic.metadata.category || 'Uncategorized'}</p>
 
-      ${post(topic, emit)}
+        ${post(this.topic, this.emit)}
+        ${this.topic.replies.map(r => reply(r, this.emit))}
 
-      ${topic.replies.map(r => reply(r, emit))}
+        <hr>
 
-      <hr>
+        ${this.form(state, emit)}
+      </div>`
+  }
 
-      <form style="width: 500px;" onsubmit=${onSubmit}>
+  form (state, emit) {
+    var loading = state.topics.posting ? 'is-loading' : ''
+
+    return html`
+      <form style="width: 500px;" onsubmit=${this.reply}>
         <div class="field">
           <div class="control">
             <textarea class="textarea" 
@@ -38,20 +49,37 @@ function view (state, emit) {
         <div class="field">
           <div class="control">
             <button role="submit" 
-              class="button is-primary ${state.topics.posting ? 'is-loading' : ''}">
+              class="button is-primary ${loading}">
               Reply
             </button>        
           </div>
         </div>
-      </form>
-    </div>`
+      </form>`
+  }
 
-  function onSubmit (e) {
+  reply (e) {
     e.preventDefault()
 
     var { content } = e.target
 
-    emit('create-comment', topic, content.value)
+    this.emit('create-comment', this.topic, content.value)
+  }
+
+  update () {
+    return true
+  }
+
+  load () {
+    var { author, permlink } = this.state.params
+
+    steem.getTopic(author, permlink, (err, topic) => {
+      this.topic = topic
+      this.rerender()
+    })
+  }
+
+  unload () {
+    this.topic = null
   }
 }
 
@@ -68,7 +96,7 @@ function post (topic, emit) {
         </figure>
       </div>
       <div class="column is-8">
-        <nav class="level">
+        <header class="level">
           <div class="level-left">
             <div class="level-item">
               ${topic.author}
@@ -80,13 +108,13 @@ function post (topic, emit) {
               ${new Date(topic.created).toLocaleString()}
             </p>
           </div>
-        </nav>
+        </header>
 
-        <div class="content">
+        <article class="content">
           ${topic.body}
-        </div>
+        </article>
 
-        <div class="level">
+        <footer class="level">
           <div class="level-left"></div>
           <div class="level-right">
             <div class="level-item">
@@ -98,17 +126,10 @@ function post (topic, emit) {
                   </span>
                 </a>
 
-                <a class="button">
-                  <span class="icon is-small">
-                    <i class="fa fa-reply"></i>
-                  </span>
-                  <span>Reply</span>
-                </a>
-
               </p>
             </div>
           </div>
-        </div>
+        </footer>
         
       </div>
     </div>
@@ -131,17 +152,23 @@ function reply (data, emit) {
           <nav class="level">
             <div class="level-left">
               <div class="level-item">
-                ${data.postedBy}
+                ${data.author}
               </div>
             </div>
 
             <div class="level-right">
               <p class="level-item">
-                ${new Date(data.postedOn).toLocaleString()}
+                ${new Date(data.created).toLocaleString()}
               </p>
             </div>
           </nav>
+
+          <div class="content">${data.body}</div>
         </div>
       </div>
     </div>`
+}
+
+module.exports = function (state, emit) {
+  return state.cache(TopicPage, 'topic-page').render(state, emit)
 }

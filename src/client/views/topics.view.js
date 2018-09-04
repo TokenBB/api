@@ -16,7 +16,6 @@ function topics (state, emit) {
           <tr>
             <th style="width: 30%">Topic</th>
             <th style="min-width: 20ex">Category</th>
-            <th>Users</th>
             <th>Replies</th>
             <th>Upvotes</th>
             <th>Pending Payout</th>
@@ -70,8 +69,7 @@ function row (topic, emit) {
           ${topic.title}
         </a>
       </td>
-      <td><a>${topic.category}</a></td>
-      <td>${(topic.users || []).map(user => avatar(user))}</td>
+      <td>${topic.metadata.category || 'Uncategorized'}</td>
       <td>${topic.children}</td>
       <td>${topic.net_votes}</td>
       <td>

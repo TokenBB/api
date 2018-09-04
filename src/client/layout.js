@@ -28,7 +28,7 @@ function profile (state, emit) {
 function connect (state, emit) {
   return html`
     <p>
-      <a class="button is-primary" href="${state.app.loginURL}">
+      <a class="button is-primary" href="${state.auth.loginURL}">
         Connect
       </a>
     </p>`

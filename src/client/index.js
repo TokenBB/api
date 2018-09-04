@@ -1,13 +1,26 @@
 var choo = require('choo')
 var devtools = require('choo-devtools')
 
+var authStore = require('./stores/auth.store')
+var postStore = require('./stores/post.store')
+var router = require('./router')
+var steem = require('./services/steem.service')
+
 var app = choo()
 
-app.use(devtools())
-app.use(require('./store'))
+steem.start({
+  url: process.env.STEEMD_URL,
+  addressPrefix: process.env.ADDRESS_PREFIX,
+  chainId: process.env.CHAIN_ID,
+  parentPost: {
+    author: process.env.APP_ACCOUNT,
+    permlink: process.env.APP_ACCOUNT + '-topics'
+  }
+})
 
-app.route('/', require('./layout')(require('./views/topics.view')))
-app.route('/topics/:author/:permlink', require('./layout')(require('./views/topic.view')))
-app.route('/new', require('./layout')(require('./views/new-topic.view')))
+app.use(devtools())
+app.use(router)
+app.use(authStore)
+app.use(postStore)
 
 app.mount('body')
