@@ -3,7 +3,11 @@ var html = require('choo/html')
 module.exports = view
 
 function view (state, emit) {
-  var topic = state.topics.list.find(t => t.id === state.params.topicId)
+  var { author, permlink } = state.params
+
+  var topic = state.topics.list.find(t => {
+    return t.permlink === permlink && t.author === author
+  })
 
   if (!topic) return ''
 
@@ -22,8 +26,33 @@ function view (state, emit) {
 
       <hr>
 
-      ${addReply(state, emit)}
+      <form style="width: 500px;" onsubmit=${onSubmit}>
+        <div class="field">
+          <div class="control">
+            <textarea class="textarea" 
+              placeholder="Type here."
+              style="width: 450px;"></textarea>
+          </div>
+        </div>
+      
+        <div class="field">
+          <div class="control">
+            <button role="submit" 
+              class="button is-primary ${state.topics.posting ? 'is-loading' : ''}">
+              Reply
+            </button>        
+          </div>
+        </div>
+      </form>
     </div>`
+
+  function onSubmit (e) {
+    e.preventDefault()
+
+    var { content } = e.target
+
+    emit('create-comment', topic, content.value)
+  }
 }
 
 function post (topic, emit) {
@@ -48,13 +77,37 @@ function post (topic, emit) {
 
           <div class="level-right">
             <p class="level-item">
-              ${new Date(topic.postedOn).toLocaleString()}
+              ${new Date(topic.created).toLocaleString()}
             </p>
           </div>
         </nav>
 
         <div class="content">
-          ${topic.content}
+          ${topic.body}
+        </div>
+
+        <div class="level">
+          <div class="level-left"></div>
+          <div class="level-right">
+            <div class="level-item">
+              <p class="buttons">
+
+                <a class="button">
+                  <span class="icon">
+                    <i class="fa fa-edit"></i>
+                  </span>
+                </a>
+
+                <a class="button">
+                  <span class="icon is-small">
+                    <i class="fa fa-reply"></i>
+                  </span>
+                  <span>Reply</span>
+                </a>
+
+              </p>
+            </div>
+          </div>
         </div>
         
       </div>
@@ -88,68 +141,7 @@ function reply (data, emit) {
               </p>
             </div>
           </nav>
-
-          ${ipsum2()}
-          
         </div>
       </div>
-
-    </div>`
-}
-
-function addReply (state, emit) {
-  if (!state.auth.accessToken) return ''
-
-  return html`
-    <form style="width: 500px;" onsubmit=${onSubmit}>
-      <div class="field">
-        <div class="control">
-          <textarea class="textarea" placeholder="Type here." style="width: 450px;"></textarea>
-        </div>
-      </div>
-    
-      <div class="field">
-        <div class="control">
-          <button role="submit" class="button is-primary ${state.topics.posting ? 'is-loading' : ''}">
-            Reply
-          </button>        
-        </div>
-      </div>
-    </form>`
-
-  function onSubmit (e) {
-    e.preventDefault()
-
-    emit('add-comment', e.target.comment.value)
-  }
-}
-
-function ipsum () {
-  return html`<div class="content">
-    <p>Ex officia consectetur turkey eu shank. 
-    Dolore ea consectetur mollit duis anim brisket meatball sausage id ham hock. 
-    Meatloaf ipsum esse sausage labore. Cupim ground round chuck strip steak chicken ea 
-    officia velit sausage. Anim meatball ea, fugiat chuck salami nisi mollit adipisicing. 
-    Pork loin et cupim capicola est pariatur short loin alcatra esse tri-tip. 
-    Bresaola porchetta salami exercitation commodo irure.</p>
-
-    <p>Veniam est strip steak enim reprehenderit pork, fugiat kevin esse sausage 
-    pastrami adipisicing prosciutto hamburger commodo. Duis proident turducken 
-    incididunt eiusmod rump bacon dolore. Frankfurter beef aliquip, sirloin in id 
-    capicola bacon nisi tongue swine. Eu adipisicing ground round capicola ham lorem 
-    anim dolore sirloin. Tongue corned beef porchetta in ex. Ullamco eu turkey, 
-    andouille reprehenderit nostrud ham deserunt sirloin burgdoggen nisi cow buffalo.</p> 
-
-    <p>Fatback meatloaf tri-tip tail est voluptate.</p></div>`
-}
-
-function ipsum2 () {
-  return html`
-    <div class="content">
-      <p>Cupim ground round chuck strip steak chicken ea 
-      officia velit sausage. Anim meatball ea, fugiat chuck salami nisi mollit adipisicing. 
-      Pork loin et cupim capicola est pariatur short loin alcatra esse tri-tip. 
-      Bresaola porchetta salami exercitation commodo irure.
-      </p>
     </div>`
 }

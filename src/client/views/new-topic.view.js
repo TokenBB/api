@@ -39,7 +39,9 @@ function newTopic (state, emit) {
   function onSubmit (e) {
     e.preventDefault()
 
-    emit('create-topic', e.target)
+    var { category, title, content } = e.target
+
+    emit('create-topic', category.value, title.value, content.value)
   }
 }
 

@@ -1,12 +1,20 @@
-const KEYS = {
-  ACCESS_TOKEN: process.env.APP_ACCOUNT + ':access-token',
-  USERNAME: process.env.APP_ACCOUNT + ':username'
+const ACCESS_TOKEN_KEY = process.env.APP_ACCOUNT + ':access-token'
+const USERNAME_KEY = process.env.APP_ACCOUNT + ':username'
+const TOPIC_PARENT_AUTHOR = process.env.APP_ACCOUNT
+const TOPIC_PARENT_PERMLINK = process.env.APP_ACCOUNT + '-topics'
+const DEFAULT_POST_METADATA = {
+  'app': 'tokenbb/0.1',
+  'format': 'markdown',
+  'tags': [
+    'tokenbb'
+  ],
+  'images': [],
+  'videos': []
 }
 
 var steem = require('@steemit/steem-js')
 var sc2 = require('sc2-sdk')
 var request = require('request')
-var series = require('run-series')
 
 var storage = window.sessionStorage
 var connect = createConnectAPI()
@@ -37,6 +45,7 @@ function store (state, emitter, app) {
 
   emitter.on('DOMContentLoaded', () => {
     emitter.on('create-topic', createTopic)
+    emitter.on('create-reply', createReply)
     emitter.on('logout', logout)
 
     onInit()
@@ -51,36 +60,61 @@ function store (state, emitter, app) {
     emitter.emit('render')
   }
 
-  async function createTopic (form) {
+  function createTopic (category, title, content) {
     state.topics.posting = true
     emitter.emit('render')
 
-    var author = state.auth.username
-    var title = form.title.value
-    var slug = slugFrom(title)
-    var id = `${author}_${slug}`
-    var content = form.content.value
-    var category = form.category.value
-
-    series([
-      done => draft(author, category, title, content, done),
-      done => broadcast(author, category, title, content, done),
-      done => publish(id, done)
-    ], onDone)
-
-    function onDone (err) {
-      if (err) return handleErrors(err)
-
-      state.topics.posting = false
-
-      emitter.emit(state.events.PUSHSTATE, `/topics/${id}`)
+    var message = {
+      author: state.auth.username,
+      permlink: permlinkFrom(title),
+      category,
+      title,
+      content
     }
 
-    function handleErrors (err) {
-      console.error(err)
-      state.topics.posting = false
-      emitter.emit('render')
+    broadcast(message, (err, result) => {
+      if (err) return handlePostingErrors(err)
+
+      publish(message, (err, response) => {
+        if (err) return handlePostingErrors(err)
+
+        state.topics.posting = false
+        emitter.emit('render')
+
+        var route = `/topics/${message.author}/${message.permlink}`
+
+        emitter.emit(state.events.PUSHSTATE, route)
+      })
+    })
+  }
+
+  function createReply (parent, content) {
+    state.topics.posting = true
+    emitter.emit('render')
+
+    var message = {
+      parent,
+      author: state.auth.username,
+      title: `re: ${parent.title}`,
+      content
     }
+
+    broadcast(message, (err, post) => {
+      if (err) return handlePostingErrors(err)
+
+      publish(message, (err) => {
+        if (err) return handlePostingErrors(err)
+
+        state.topics.posting = false
+        emitter.emit('render')
+      })
+    })
+  }
+
+  function handlePostingErrors (err) {
+    console.error(err)
+    state.topics.posting = false
+    emitter.emit('render')
   }
 
   function logout () {
@@ -100,30 +134,39 @@ function store (state, emitter, app) {
   function loadTopics () {
     var opts = {
       method: 'GET',
-      url: process.env.API_URL + '/topics',
+      url: process.env.API_URL + '/posts',
       json: true
     }
 
-    request(opts, (err, res) => {
+    request(opts, (err, response, posts) => {
       if (err) return console.error(err)
 
-      state.topics.list = res.body.filter(topic => topic.status === 'publish')
-      state.topics.loading = false
+      var permlinks = posts.map(post => post.permlink)
 
-      emitter.emit('render')
+      steem.api.getContentReplies(TOPIC_PARENT_AUTHOR, TOPIC_PARENT_PERMLINK, (err, topics) => {
+        if (err) return console.error(err)
+
+        state.topics.list = topics.filter(topic => {
+          return permlinks.includes(topic.permlink)
+        })
+
+        state.topics.loading = false
+
+        emitter.emit('render')
+      })
     })
   }
 
   function storeSession () {
-    storage.setItem(KEYS.ACCESS_TOKEN, state.query.access_token)
-    storage.setItem(KEYS.USERNAME, state.query.username)
+    storage.setItem(ACCESS_TOKEN_KEY, state.query.access_token)
+    storage.setItem(USERNAME_KEY, state.query.username)
 
     emitter.emit(state.events.REPLACESTATE, '/')
   }
 
   function loadSession () {
-    var accessToken = storage.getItem(KEYS.ACCESS_TOKEN)
-    var username = storage.getItem(KEYS.USERNAME)
+    var accessToken = storage.getItem(ACCESS_TOKEN_KEY)
+    var username = storage.getItem(USERNAME_KEY)
 
     if (accessToken && username) {
       connect.setAccessToken(accessToken)
@@ -136,28 +179,9 @@ function store (state, emitter, app) {
   }
 
   function clearSession () {
-    storage.removeItem(KEYS.ACCESS_TOKEN)
-    storage.removeItem(KEYS.USERNAME)
+    storage.removeItem(ACCESS_TOKEN_KEY)
+    storage.removeItem(USERNAME_KEY)
   }
-
-  // function postComment (comment, callback) {
-  //   comment.parentAuthor = comment.parent.split('/')[0].slice(1)
-  //   comment.parentPermlink = comment.parent.split('/')[1]
-  //   comment.author = state.auth.username
-  //   comment.permlink = slugFrom(comment.body)
-  //   comment.metadata = {}
-
-  //   return connect.comment(
-  //     comment.parentAuthor,
-  //     comment.parentPermlink,
-  //     comment.author,
-  //     comment.permlink,
-  //     comment.title,
-  //     comment.body,
-  //     comment.metadata,
-  //     callback
-  //   )
-  // }
 }
 
 function createConnectAPI () {
@@ -173,54 +197,28 @@ function createConnectAPI () {
   return api
 }
 
-function draft (author, category, title, content, callback) {
-  var opts = {
-    method: 'POST',
-    url: process.env.API_URL + '/topics',
-    json: true,
-    headers: { authorization: connect.options.accessToken },
-    body: {
-      author,
-      category,
-      title,
-      slug: slugFrom(title),
-      content
-    }
-  }
+function broadcast (message, callback) {
+  var { author, category, title, content, parent, permlink } = message
 
-  request(opts, callback)
-}
+  var parentAuthor = parent ? parent.author : TOPIC_PARENT_AUTHOR
+  var parentPermlink = parent ? parent.permlink : TOPIC_PARENT_PERMLINK
 
-function broadcast (author, category, title, content, callback) {
-  var slug = slugFrom(title)
-
-  var parentAuthor = process.env.APP_ACCOUNT
-  var parentPermlink = process.env.APP_ACCOUNT + '-topics'
-
-  var metadata = {
-    'app': 'tokenbb/0.1',
-    'format': 'markdown',
-    'tags': [
-      'tokenbb'
-    ],
-    'images': [],
-    'videos': [],
+  var metadata = Object.assign({}, DEFAULT_POST_METADATA, {
     'tokenbb': {
-      'type': 'topic',
-      'app': process.env.APP_ACCOUNT,
-      'slug': slug,
+      'account': process.env.APP_ACCOUNT,
+      'type': parent ? 'reply' : 'topic',
       'author': author,
       'title': title,
       'category': category || null,
       'tags': []
     }
-  }
+  })
 
   return connect.comment(
     parentAuthor,
     parentPermlink,
     author,
-    slug,
+    permlink,
     title,
     content,
     metadata,
@@ -228,21 +226,23 @@ function broadcast (author, category, title, content, callback) {
   )
 }
 
-function publish (topicId, callback) {
+function publish (message, callback) {
+  var { author, permlink } = message
   var opts = {
-    method: 'PATCH',
-    url: process.env.API_URL + '/topics/' + topicId,
+    method: 'POST',
+    url: process.env.API_URL + `/posts`,
     json: true,
     headers: { authorization: connect.options.accessToken },
     body: {
-      status: 'publish'
+      author,
+      permlink
     }
   }
 
   request(opts, callback)
 }
 
-function slugFrom (text) {
+function permlinkFrom (text) {
   return removeSpecialChars(text.toLowerCase()).split(' ').join('-').slice(0, 63)
 }
 

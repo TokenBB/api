@@ -66,18 +66,18 @@ function row (topic, emit) {
   return html`
     <tr class="is-vcentered" style="min-height: 3rem; ">
       <td>
-        <a href="/topics/${topic.id}">
+        <a href="/topics/${topic.author}/${topic.permlink}">
           ${topic.title}
         </a>
       </td>
       <td><a>${topic.category}</a></td>
       <td>${(topic.users || []).map(user => avatar(user))}</td>
-      <td>${(topic.replies || {}).length}</td>
-      <td>${topic.upvotes}</td>
+      <td>${topic.children}</td>
+      <td>${topic.net_votes}</td>
       <td>
         <div class="select is-small">
           <select>
-            <option>\$${topic.payout}</option>
+            <option>${topic.pending_payout_value}</option>
           </select>
         </div>
       </td>
