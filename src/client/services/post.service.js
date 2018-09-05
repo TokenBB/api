@@ -8,28 +8,26 @@ module.exports = {
   createReply
 }
 
-function listTopics (category, cb) {
+function listTopics (category) {
   var promises = [
     wp.listValidTopics(category),
     steem.listAllTopics()
   ]
 
-  Promise.all(promises)
-    .then(([ validTopics, topics ]) => {
-      topics = filterInvalidPosts(validTopics, topics)
-      topics = exposePostsMetadata(topics)
+  return Promise.all(promises).then(([ validTopics, topics ]) => {
+    topics = filterInvalidPosts(validTopics, topics)
+    topics = exposePostsMetadata(topics)
 
-      cb(null, topics)
-    })
-    .catch(err => cb(err))
+    return topics
+  })
 }
 
-function getTopic (author, permlink, cb) {
+function getTopic (author, permlink) {
   var validReplies
 
-  wp.getValidTopic(author, permlink)
+  return wp.getValidTopic(author, permlink)
     .then(validTopic => {
-      if (!validTopic) return cb(null)
+      if (!validTopic) return null
 
       validReplies = validTopic.replies
 
@@ -41,11 +39,11 @@ function getTopic (author, permlink, cb) {
       replies = exposePostsMetadata(replies)
       topic.replies = replies
 
-      cb(null, topic)
+      return topic
     })
 }
 
-function createTopic (author, category, title, content, cb) {
+function createTopic (author, category, title, content) {
   var message = {
     permlink: permlinkFrom(title),
     author,
@@ -54,18 +52,11 @@ function createTopic (author, category, title, content, cb) {
     content
   }
 
-  steem.broadcast(message, (err, result) => {
-    if (err) return cb(err)
-
-    wp.publish(message, (err, response) => {
-      if (err) return cb(err)
-
-      cb(null, message)
-    })
-  })
+  return steem.broadcastTopic(message)
+    .then(topic => wp.publishTopic(topic).then(() => topic))
 }
 
-function createReply (author, parent, content, cb) {
+function createReply (author, parent, content) {
   var message = {
     title: `re: ${parent.title}`,
     parent,
@@ -73,16 +64,10 @@ function createReply (author, parent, content, cb) {
     content
   }
 
-  steem.broadcast(message, (err, post) => {
-    if (err) return cb(err)
-
-    wp.publish(message, (err) => {
-      if (err) return cb(err)
-
-      cb(null, message)
-    })
-  })
+  return steem.broadcastReply(message).then(reply => wp.publishReply(reply))
 }
+
+// -----------------------------------------------------------------------------
 
 function permlinkFrom (text) {
   return removeSpecialChars(text.toLowerCase()).split(' ').join('-').slice(0, 63)

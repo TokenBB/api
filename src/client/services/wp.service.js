@@ -73,7 +73,7 @@ function publishTopic (message) {
 
   var opts = {
     method: 'POST',
-    url: process.env.API_URL + `/posts`,
+    url: process.env.API_URL + `/topics`,
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
     body: {

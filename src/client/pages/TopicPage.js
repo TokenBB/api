@@ -77,7 +77,7 @@ class TopicPage extends Component {
   load () {
     var { author, permlink } = this.state.params
 
-    postService.getTopic(author, permlink, (err, topic) => {
+    postService.getTopic(author, permlink).then(topic => {
       if (!topic) return this.notFound()
 
       this.topic = topic

@@ -30,9 +30,7 @@ function topics (state, emit) {
     </div>`
 
   function formatTopics (topics) {
-    return topics
-      .filter(topic => state.category !== null || topic.category === state.category)
-      .map(topic => row(topic, emit))
+    return topics.map(topic => row(topic, emit))
   }
 }
 
