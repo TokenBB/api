@@ -1,30 +1,42 @@
 use tokenbb;
 
-create table categories (
-  key char,
-  name char
+create table categories(
+  id int auto_increment primary key,
+  name char(64)
 );
 
-create table posts (
-  author char,
-  permlink char,
-  category char,
-  hidden bit default 0,
-
-  foreign key (category) references categories(key),
+create table topics(
+  id int auto_increment primary key,
+  author char(64),
+  permlink char(255),
+  category int,
+  foreign key(category) references categories(id)
 );
 
-create table replies (
-  parent_author char,
-  parent_permlink char,
-  author char,
-  permlink char,
-  hidden bit default 0,
-
-  foreign key (parent_author) references posts(author),
-  foreign key (parent_permlink) references posts(permlink)
+create table replies(
+  id int auto_increment primary key,
+  parent_id int,
+  author char(64),
+  permlink char(255),
+  foreign key(parent_id) references topics(id)
 );
 
-create table banned (
-  username char
+create table hidden_topics(
+  id int auto_increment primary key,
+  topic_id int,
+  hidden_by char(255),
+  foreign key(topic_id) references topics(id)
+);
+
+create table hidden_replies(
+  id int auto_increment primary key,
+  reply_id int,
+  hidden_by char(255),
+  foreign key(reply_id) references replies(id)
+);
+
+create table banned_users(
+  id int auto_increment primary key,
+  username char(64),
+  banned_by char(255)
 );
