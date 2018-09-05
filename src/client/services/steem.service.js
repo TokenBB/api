@@ -24,12 +24,12 @@ class SteemService {
       getContentRepliesAsync(author, permlink)
     ]
 
-    Promise.all(promises)
+    return Promise.all(promises)
       .then(([ topic, replies ]) => {
         topic.replies = replies
         topic.metadata = JSON.parse(topic.json_metadata)
 
-        cb(null, topic)
+        return topic
       })
       .catch(err => cb(err))
   }
@@ -39,6 +39,10 @@ class SteemService {
       this.opts.parentPost.author,
       this.opts.parentPost.permlink
     )
+  }
+
+  listReplies (author, permlink) {
+    return getContentRepliesAsync(author, permlink)
   }
 
   broadcast (message, callback) {

@@ -7,7 +7,8 @@ module.exports = {
   removeCategory,
   listValidTopics,
   listValidReplies,
-  publishTopic
+  publishTopic,
+  getValidTopic
 }
 
 function listCategories () {
@@ -82,4 +83,20 @@ function publishTopic (message) {
   }
 
   return requestAsync(opts)
+}
+
+function getValidTopic (author, permlink) {
+  var opts = {
+    method: 'GET',
+    url: process.env.API_URL + `/topics/${author}/${permlink}`,
+    json: true,
+    headers: { authorization: steem.connect.options.accessToken }
+  }
+
+  return requestAsync(opts)
+    .catch(err => {
+      if (err.statusCode === 404) return null
+
+      throw err
+    })
 }
