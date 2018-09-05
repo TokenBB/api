@@ -1,5 +1,6 @@
 var Component = require('nanocomponent')
 var html = require('choo/html')
+
 var steem = require('../services/steem.service')
 
 class TopicPage extends Component {

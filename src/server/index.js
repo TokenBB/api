@@ -29,12 +29,58 @@ app.use(helmet())
 app.use(cors())
 app.use(bodyParser.json())
 
+app.get('/categories', auth, listCategories)
+app.post('/categories/:categoryName', auth, addCategory)
+app.delete('/categories/:categoryName', auth, removeCategory)
+
 app.post('/topics', auth, createTopic)
 app.get('/topics', auth, listTopics)
 
 server.listen(PORT, () => {
   console.log('listening on ', PORT)
 })
+
+function listCategories (req, res) {
+  var statement = 'select * from categories'
+
+  db.execute(statement, (err, categories) => {
+    if (err) return console.log(err, res.status(500).end())
+
+    return res.json(categories)
+  })
+}
+
+function addCategory (req, res) {
+  var { categoryName } = req.params
+
+  var statement = 'insert into categories (name) values (?) '
+  var values = [ categoryName ]
+
+  db.execute(statement, values, (err) => {
+    if (err) return console.log(err, res.status(500).end())
+
+    var statement = 'select * from categories where name = ?'
+
+    db.execute(statement, values, (err, results) => {
+      if (err) return console.log(err, res.status(500).end())
+
+      return res.json(results[0])
+    })
+  })
+}
+
+function removeCategory (req, res) {
+  var { categoryName } = req.params
+
+  var statement = 'delete from categories where name = ?'
+  var values = [ categoryName ]
+
+  db.execute(statement, values, (err, result) => {
+    if (err) return console.log(err, res.status(500).end())
+
+    return res.json(result)
+  })
+}
 
 function createTopic (req, res) {
   var { author, permlink } = req.body
