@@ -100,7 +100,7 @@ function post (topic, emit) {
     <div class="columns">
       <div class="column is-narrow">
         <figure class="image" style="width: 64px; height: 64px; display: inline-block; padding: 0 2px;">
-         <img class="is-rounded" src="https://bulma.io/images/placeholders/256x256.png">
+         <img class="is-rounded" src="https://img.busy.org/@${topic.author}">
         </figure>
       </div>
       <div class="column is-8">
@@ -153,7 +153,7 @@ function reply (data, emit) {
       <div class="columns">
         <div class="column is-narrow">
           <figure class="image" style="width: 64px; height: 64px; display: inline-block; padding: 0 2px;">
-           <img class="is-rounded" src="https://bulma.io/images/placeholders/256x256.png">
+           <img class="is-rounded" src="https://img.busy.org/@${data.author}">
           </figure>
         </div>
         <div class="column is-8">

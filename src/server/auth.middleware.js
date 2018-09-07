@@ -19,7 +19,11 @@ function auth (req, res, next) {
   request(opts, (err, data) => {
     if (err) return console.log(err, res.status(403).end())
 
-    req.user = { name: data.body.user }
+    if (data.body && data.body.user) {
+      req.user = {
+        name: data.body.user
+      }
+    }
 
     next()
   })

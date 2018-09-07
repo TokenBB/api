@@ -17,7 +17,7 @@ var replies = require('./routes/replies')
 var app = express()
 var server = http.createServer(app)
 
-steem.api.setOptions({ url: 'wss://' + process.env.STEEMD_URL })
+steem.api.setOptions({ url: process.env.STEEMD_URL })
 steem.config.set('address_prefix', process.env.ADDRESS_PREFIX)
 steem.config.set('chain_id', process.env.CHAIN_ID)
 
@@ -32,6 +32,7 @@ app.delete('/categories/:categoryName', auth, categories.remove)
 app.get('/topics', auth, topics.list)
 app.get('/topics/:author/:permlink', auth, topics.get)
 app.post('/topics', auth, topics.create)
+app.delete('/topics', auth, topics.del)
 
 app.post('/replies', auth, replies.create)
 

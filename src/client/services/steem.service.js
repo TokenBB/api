@@ -10,10 +10,11 @@ class SteemService {
   start (opts) {
     this.opts = this._validateOptions(opts)
 
-    steem.api.setOptions({ url: 'wss://' + opts.url })
-
+    steem.api.setOptions({ url: opts.url })
     steem.config.set('address_prefix', opts.addressPrefix)
     steem.config.set('chain_id', opts.chainId)
+
+    console.log(steem.config)
 
     this.connect = this._createConnectAPI()
   }

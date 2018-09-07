@@ -6,9 +6,20 @@ function layout (view) {
   return function (state, emit) {
     return html`
       <body>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              tokenbb
+            </div>
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item">
+              ${profile(state, emit)}
+            </div>
+          </div>
+        </nav>
+
         <section class="section">
-          ${profile(state, emit)}
-          <hr>
           ${view(state, emit)}
         </section>
       </body>`

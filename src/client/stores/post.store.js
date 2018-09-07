@@ -20,9 +20,27 @@ function postStore (state, emitter) {
   emitter.on('DOMContentLoaded', () => {
     init()
 
+    emitter.on('delete-topic', deleteTopic)
     emitter.on('create-topic', createTopic)
     emitter.on('create-reply', createReply)
   })
+
+  function deleteTopic (topic) {
+    var msg = 'are you sure you want to delete the topic titled: ' + topic.title + '?'
+
+    if (window.confirm(msg)) {
+      postService.deleteTopic(topic)
+        .then(res => {
+          var index = state.topics.list.findIndex(t => t.id === topic.id)
+
+          state.topics.list.splice(index, 1)
+          emitter.emit('render')
+        })
+        .catch(err => {
+          console.error('oops!', err)
+        })
+    }
+  }
 
   function createTopic (category, title, content) {
     state.topics.posting = true

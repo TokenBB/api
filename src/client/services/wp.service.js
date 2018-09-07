@@ -2,6 +2,7 @@ var requestAsync = require('request-promise')
 var steem = require('./steem.service')
 
 module.exports = {
+  deleteTopic,
   listCategories,
   addCategory,
   removeCategory,
@@ -12,10 +13,23 @@ module.exports = {
   getValidTopic
 }
 
+function deleteTopic (topic) {
+  var opts = {
+    method: 'DELETE',
+    json: true,
+    headers: { authorization: steem.connect.options.accessToken },
+    url: process.env.API_URL + '/topics',
+    body: topic
+  }
+
+  return requestAsync(opts)
+}
+
 function listCategories () {
   var opts = {
     method: 'GET',
     json: true,
+    headers: { authorization: steem.connect.options.accessToken },
     url: process.env.API_URL + '/categories'
   }
 
@@ -26,6 +40,7 @@ function addCategory (name) {
   var opts = {
     method: 'POST',
     json: true,
+    headers: { authorization: steem.connect.options.accessToken },
     url: process.env.API_URL + '/categories/' + name
   }
 
@@ -36,6 +51,7 @@ function removeCategory (name) {
   var opts = {
     method: 'DELETE',
     json: true,
+    headers: { authorization: steem.connect.options.accessToken },
     url: process.env.API_URL + '/categories/' + name
   }
 
@@ -50,6 +66,7 @@ function listValidTopics (category) {
   var opts = {
     method: 'GET',
     json: true,
+    headers: { authorization: steem.connect.options.accessToken },
     url
   }
 
@@ -63,6 +80,7 @@ function listValidReplies (post) {
   var opts = {
     method: 'GET',
     json: true,
+    headers: { authorization: steem.connect.options.accessToken },
     url
   }
 

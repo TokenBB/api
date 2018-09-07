@@ -19,6 +19,7 @@ function topics (state, emit) {
             <th>Replies</th>
             <th>Upvotes</th>
             <th>Pending Payout</th>
+            <th> </th>
           </tr>
         </thead>
 
@@ -30,7 +31,7 @@ function topics (state, emit) {
     </div>`
 
   function formatTopics (topics) {
-    return topics.map(topic => row(topic, emit))
+    return topics.map(topic => row(topic, state, emit))
   }
 }
 
@@ -59,7 +60,7 @@ function nav (state, emit) {
     </nav>`
 }
 
-function row (topic, emit) {
+function row (topic, state, emit) {
   return html`
     <tr class="is-vcentered" style="min-height: 3rem; ">
       <td>
@@ -77,7 +78,18 @@ function row (topic, emit) {
           </select>
         </div>
       </td>
+      <td>
+        <a class="button is-small" onclick=${e => deleteTopic(topic)}>
+          <span class="icon is-small">
+            <i class="fa fa-trash"></i>
+          </span>
+        </a>
+      </td>
     </tr>`
+
+  function deleteTopic (topic) {
+    emit('delete-topic', topic)
+  }
 }
 
 function avatar (user) {

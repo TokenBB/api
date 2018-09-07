@@ -2,10 +2,15 @@ var steem = require('./steem.service')
 var wp = require('./wp.service')
 
 module.exports = {
+  deleteTopic,
   listTopics,
   getTopic,
   createTopic,
   createReply
+}
+
+function deleteTopic (topic) {
+  return wp.deleteTopic(topic)
 }
 
 function listTopics (category) {
