@@ -3,27 +3,47 @@ var wp = require('./wp.service')
 
 module.exports = {
   listTopics,
+  getTopic,
   createTopic,
   createReply
 }
 
-function listTopics (category, cb) {
+function listTopics (category) {
   var promises = [
     wp.listValidTopics(category),
     steem.listAllTopics()
   ]
 
-  Promise.all(promises)
-    .then(([ validTopics, topics ]) => {
-      topics = filterInvalidTopics(validTopics, topics)
-      topics = exposeTopicMetadata(topics)
+  return Promise.all(promises).then(([ validTopics, topics ]) => {
+    topics = filterInvalidPosts(validTopics, topics)
+    topics = exposePostsMetadata(topics)
 
-      cb(null, topics)
-    })
-    .catch(err => cb(err))
+    return topics
+  })
 }
 
-function createTopic (author, category, title, content, cb) {
+function getTopic (author, permlink) {
+  var validReplies
+
+  return wp.getValidTopic(author, permlink)
+    .then(validTopic => {
+      if (!validTopic) return null
+
+      validReplies = validTopic.replies
+
+      return steem.getTopic(author, permlink)
+    })
+    .then(topic => {
+      var replies = filterInvalidPosts(validReplies, topic.replies)
+
+      replies = exposePostsMetadata(replies)
+      topic.replies = replies
+
+      return topic
+    })
+}
+
+function createTopic (author, category, title, content) {
   var message = {
     permlink: permlinkFrom(title),
     author,
@@ -32,35 +52,24 @@ function createTopic (author, category, title, content, cb) {
     content
   }
 
-  steem.broadcast(message, (err, result) => {
-    if (err) return cb(err)
-
-    wp.publish(message, (err, response) => {
-      if (err) return cb(err)
-
-      cb(null, message)
-    })
-  })
+  return steem.broadcastTopic(message)
+    .then(topic => wp.publishTopic(topic).then(() => topic))
 }
 
-function createReply (author, parent, content, cb) {
+function createReply (parent, author, content) {
+  var title = `re: ${parent.title} ${Date.now()}`
   var message = {
-    title: `re: ${parent.title}`,
-    parent,
     author,
+    title,
+    permlink: permlinkFrom(title),
     content
   }
 
-  steem.broadcast(message, (err, post) => {
-    if (err) return cb(err)
-
-    wp.publish(message, (err) => {
-      if (err) return cb(err)
-
-      cb(null, message)
-    })
-  })
+  return steem.broadcastReply(parent, message)
+    .then(reply => wp.publishReply(parent, message).then(() => reply))
 }
+
+// -----------------------------------------------------------------------------
 
 function permlinkFrom (text) {
   return removeSpecialChars(text.toLowerCase()).split(' ').join('-').slice(0, 63)
@@ -70,11 +79,11 @@ function removeSpecialChars (str) {
   return str.replace(/[^\w\s]/gi, '')
 }
 
-function filterInvalidTopics (validTopics, topics) {
-  var permlinks = validTopics.map(vt => vt.permlink)
-  var authors = validTopics.map(vt => vt.author)
+function filterInvalidPosts (validPosts, posts) {
+  var permlinks = validPosts.map(vt => vt.permlink)
+  var authors = validPosts.map(vt => vt.author)
 
-  return topics.filter(topic => {
+  return posts.filter(topic => {
     return (
       permlinks.includes(topic.permlink) &&
       authors.includes(topic.author)
@@ -82,9 +91,10 @@ function filterInvalidTopics (validTopics, topics) {
   })
 }
 
-function exposeTopicMetadata (topics) {
-  return topics.map(t => {
-    t.metadata = JSON.parse(t.json_metadata)
-    return t
+function exposePostsMetadata (posts) {
+  return posts.map(post => {
+    post.metadata = JSON.parse(post.json_metadata)
+
+    return post
   })
 }

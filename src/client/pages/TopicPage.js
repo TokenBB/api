@@ -1,7 +1,7 @@
 var Component = require('nanocomponent')
 var html = require('choo/html')
 
-var steem = require('../services/steem.service')
+var postService = require('../services/post.service')
 
 class TopicPage extends Component {
   constructor (name, state, emit) {
@@ -41,7 +41,8 @@ class TopicPage extends Component {
       <form style="width: 500px;" onsubmit=${this.reply}>
         <div class="field">
           <div class="control">
-            <textarea class="textarea" 
+            <textarea class="textarea"
+              name="content" 
               placeholder="Type here."
               style="width: 450px;"></textarea>
           </div>
@@ -63,17 +64,23 @@ class TopicPage extends Component {
 
     var { content } = e.target
 
-    this.emit('create-comment', this.topic, content.value)
+    this.emit('create-reply', this.topic, content.value)
   }
 
   update () {
     return true
   }
 
+  notFound () {
+    this.emit(this.state.events.PUSH_STATE, '/404')
+  }
+
   load () {
     var { author, permlink } = this.state.params
 
-    steem.getTopic(author, permlink, (err, topic) => {
+    postService.getTopic(author, permlink).then(topic => {
+      if (!topic) return this.notFound()
+
       this.topic = topic
       this.rerender()
     })

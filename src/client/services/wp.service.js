@@ -7,7 +7,9 @@ module.exports = {
   removeCategory,
   listValidTopics,
   listValidReplies,
-  publishTopic
+  publishTopic,
+  publishReply,
+  getValidTopic
 }
 
 function listCategories () {
@@ -72,7 +74,7 @@ function publishTopic (message) {
 
   var opts = {
     method: 'POST',
-    url: process.env.API_URL + `/posts`,
+    url: process.env.API_URL + `/topics`,
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
     body: {
@@ -82,4 +84,38 @@ function publishTopic (message) {
   }
 
   return requestAsync(opts)
+}
+
+function publishReply (parent, message) {
+  var { author, permlink } = message
+
+  var opts = {
+    method: 'POST',
+    url: process.env.API_URL + `/replies`,
+    json: true,
+    headers: { authorization: steem.connect.options.accessToken },
+    body: {
+      parent,
+      author,
+      permlink
+    }
+  }
+
+  return requestAsync(opts)
+}
+
+function getValidTopic (author, permlink) {
+  var opts = {
+    method: 'GET',
+    url: process.env.API_URL + `/topics/${author}/${permlink}`,
+    json: true,
+    headers: { authorization: steem.connect.options.accessToken }
+  }
+
+  return requestAsync(opts)
+    .catch(err => {
+      if (err.statusCode === 404) return null
+
+      throw err
+    })
 }

@@ -18,20 +18,18 @@ class SteemService {
     this.connect = this._createConnectAPI()
   }
 
-  getTopic (author, permlink, cb) {
+  getTopic (author, permlink) {
     var promises = [
       getContentAsync(author, permlink),
       getContentRepliesAsync(author, permlink)
     ]
 
-    Promise.all(promises)
-      .then(([ topic, replies ]) => {
-        topic.replies = replies
-        topic.metadata = JSON.parse(topic.json_metadata)
+    return Promise.all(promises).then(([ topic, replies ]) => {
+      topic.replies = replies
+      topic.metadata = JSON.parse(topic.json_metadata)
 
-        cb(null, topic)
-      })
-      .catch(err => cb(err))
+      return topic
+    })
   }
 
   listAllTopics () {
@@ -41,13 +39,40 @@ class SteemService {
     )
   }
 
-  broadcast (message, callback) {
-    var { author, category, title, content, parent, permlink } = message
+  listReplies (author, permlink) {
+    return getContentRepliesAsync(author, permlink)
+  }
 
-    var parentAuthor = parent ? parent.author : this.opts.parentPost.author
-    var parentPermlink = parent ? parent.permlink : this.opts.parentPost.permlink
+  broadcastTopic (topic) {
+    var args = [
+      this.opts.parentPost.author,
+      this.opts.parentPost.permlink,
+      topic.author,
+      topic.permlink,
+      topic.title,
+      topic.content,
+      this._createPostMetadata(topic)
+    ]
 
-    var metadata = {
+    return this._broadcast(args)
+  }
+
+  broadcastReply (parent, reply) {
+    var args = [
+      parent.author,
+      parent.permlink,
+      reply.author,
+      reply.permlink,
+      reply.title,
+      reply.content,
+      this._createPostMetadata(reply)
+    ]
+
+    return this._broadcast(args)
+  }
+
+  _createPostMetadata (post) {
+    return {
       'app': 'tokenbb/0.1',
       'format': 'markdown',
       'tags': [ 'tokenbb' ],
@@ -55,24 +80,21 @@ class SteemService {
       'videos': [],
       'tokenbb': {
         'account': this.opts.parentPost.author,
-        'type': parent ? 'reply' : 'topic',
-        'author': author,
-        'title': title,
-        'category': category || null,
+        'category': post.category || 0,
         'tags': []
       }
     }
+  }
 
-    return this.connect.comment(
-      parentAuthor,
-      parentPermlink,
-      author,
-      permlink,
-      title,
-      content,
-      metadata,
-      callback
-    )
+  _broadcast (args) {
+    var broadcastFn = promisify(this.connect.comment).bind(this.connect)
+
+    return broadcastFn(...args).then(() => {
+      var author = args[2]
+      var permlink = args[3]
+
+      return this.getTopic(author, permlink)
+    })
   }
 
   _createConnectAPI () {

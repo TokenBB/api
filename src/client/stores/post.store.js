@@ -19,16 +19,70 @@ function postStore (state, emitter) {
 
   emitter.on('DOMContentLoaded', () => {
     init()
+
+    emitter.on('create-topic', createTopic)
+    emitter.on('create-reply', createReply)
   })
 
+  function createTopic (category, title, content) {
+    state.topics.posting = true
+    emitter.emit('render')
+
+    var author = state.auth.username
+    category = 8
+
+    return postService.createTopic(author, category, title, content)
+      .then(topic => {
+        var route = `/topics/${author}/${topic.permlink}`
+
+        state.topics.list.push(topic)
+        emitter.emit(state.events.PUSHSTATE, route)
+      })
+      .catch(err => {
+        state.topics.posting = false
+        emitter.emit('render')
+
+        return console.error(err)
+      })
+  }
+
+  function createReply (parent, content) {
+    state.topics.posting = true
+    emitter.emit('render')
+
+    var author = state.auth.username
+
+    return postService.createReply(parent, author, content)
+      .then(reply => {
+        parent.replies.push(reply)
+        state.topics.posting = false
+        emitter.emit('render')
+      })
+      .catch(err => {
+        state.topics.posting = false
+        emitter.emit('render')
+
+        return console.error(err)
+      })
+  }
+
+  function listTopics () {
+    return postService.listTopics(null)
+      .then(topics => {
+        state.topics.list = topics
+        state.topics.loading = false
+
+        emitter.emit('render')
+      })
+      .catch(err => {
+        state.topics.loading = false
+        emitter.emit('render')
+
+        return console.error(err)
+      })
+  }
+
   function init () {
-    postService.listTopics(null, (err, topics) => {
-      if (err) return console.error(err)
-
-      state.topics.list = topics
-      state.topics.loading = false
-
-      emitter.emit('render')
-    })
+    listTopics()
   }
 }
