@@ -8,6 +8,7 @@ module.exports = {
   listValidTopics,
   listValidReplies,
   publishTopic,
+  publishReply,
   getValidTopic
 }
 
@@ -77,6 +78,24 @@ function publishTopic (message) {
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
     body: {
+      author,
+      permlink
+    }
+  }
+
+  return requestAsync(opts)
+}
+
+function publishReply (parent, message) {
+  var { author, permlink } = message
+
+  var opts = {
+    method: 'POST',
+    url: process.env.API_URL + `/replies`,
+    json: true,
+    headers: { authorization: steem.connect.options.accessToken },
+    body: {
+      parent,
       author,
       permlink
     }

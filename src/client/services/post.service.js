@@ -56,15 +56,17 @@ function createTopic (author, category, title, content) {
     .then(topic => wp.publishTopic(topic).then(() => topic))
 }
 
-function createReply (author, parent, content) {
+function createReply (parent, author, content) {
+  var title = `re: ${parent.title} ${Date.now()}`
   var message = {
-    title: `re: ${parent.title}`,
-    parent,
     author,
+    title,
+    permlink: permlinkFrom(title),
     content
   }
 
-  return steem.broadcastReply(message).then(reply => wp.publishReply(reply))
+  return steem.broadcastReply(parent, message)
+    .then(reply => wp.publishReply(parent, message).then(() => reply))
 }
 
 // -----------------------------------------------------------------------------

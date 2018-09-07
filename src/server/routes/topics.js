@@ -58,8 +58,9 @@ function get (req, res) {
 }
 
 function listReplies (author, permlink, cb) {
+  console.log(author, permlink)
   var statement =
-    `select * from replies
+    `select replies.* from replies
     inner join topics 
     on replies.parent_id = topics.id 
     where topics.author = ? and topics.permlink = ?`
@@ -68,6 +69,8 @@ function listReplies (author, permlink, cb) {
 
   db.execute(statement, values, (err, replies) => {
     if (err) return cb(err)
+
+    console.log(replies)
 
     return cb(null, replies)
   })

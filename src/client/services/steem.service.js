@@ -57,7 +57,7 @@ class SteemService {
     return this._broadcast(args)
   }
 
-  broadcastReply (reply, parent) {
+  broadcastReply (parent, reply) {
     var args = [
       parent.author,
       parent.permlink,
@@ -88,8 +88,6 @@ class SteemService {
 
   _broadcast (args) {
     var broadcastFn = promisify(this.connect.comment).bind(this.connect)
-
-    console.log(...args)
 
     return broadcastFn(...args).then(() => {
       var author = args[2]

@@ -21,6 +21,7 @@ function postStore (state, emitter) {
     init()
 
     emitter.on('create-topic', createTopic)
+    emitter.on('create-reply', createReply)
   })
 
   function createTopic (category, title, content) {
@@ -36,6 +37,26 @@ function postStore (state, emitter) {
 
         state.topics.list.push(topic)
         emitter.emit(state.events.PUSHSTATE, route)
+      })
+      .catch(err => {
+        state.topics.posting = false
+        emitter.emit('render')
+
+        return console.error(err)
+      })
+  }
+
+  function createReply (parent, content) {
+    state.topics.posting = true
+    emitter.emit('render')
+
+    var author = state.auth.username
+
+    return postService.createReply(parent, author, content)
+      .then(reply => {
+        parent.replies.push(reply)
+        state.topics.posting = false
+        emitter.emit('render')
       })
       .catch(err => {
         state.topics.posting = false

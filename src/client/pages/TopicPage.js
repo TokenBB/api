@@ -41,7 +41,8 @@ class TopicPage extends Component {
       <form style="width: 500px;" onsubmit=${this.reply}>
         <div class="field">
           <div class="control">
-            <textarea class="textarea" 
+            <textarea class="textarea"
+              name="content" 
               placeholder="Type here."
               style="width: 450px;"></textarea>
           </div>
@@ -63,7 +64,7 @@ class TopicPage extends Component {
 
     var { content } = e.target
 
-    this.emit('create-comment', this.topic, content.value)
+    this.emit('create-reply', this.topic, content.value)
   }
 
   update () {
