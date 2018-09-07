@@ -20,8 +20,7 @@ class SettingsPage extends Component {
 
     return html`
       <div>
-        <a href="/">◄ Back</a> 
-
+        <h2 class="title is-4">Settings</h2>
         <ul>
           ${this.categories.map(c => html`
             <li>

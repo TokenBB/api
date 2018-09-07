@@ -1,13 +1,20 @@
 var html = require('choo/html')
 var Component = require('choo/component')
 
+function noop () {}
+
 module.exports = class Dropdown extends Component {
-  constructor (name, state, emit) {
+  constructor (name, state, emit, config) {
     super(name)
 
     this.name = name
     this.state = state
     this.emit = emit
+    this.config = Object.assign({
+      defaultOption: {
+        name: 'Select an option'
+      }
+    }, config)
 
     this.toggled = false
     this.selected = null
@@ -18,20 +25,18 @@ module.exports = class Dropdown extends Component {
     this.select = this.select.bind(this)
   }
 
-  update () {
-    return false
+  update (options, selected) {
+    return true
   }
 
   createElement (options) {
-    if (!this.selected) this.selected = options[0]
-
     this.el = html`
       <div class="dropdown ${this.toggled ? 'is-active' : ''}">
         <div class="dropdown-trigger" onclick=${this.trigger}>
           <button class="button" 
             aria-haspopup="true" 
             aria-controls="dropdown-menu">
-            <span>${this.selected.name}</span>
+            <span>${this.selected ? this.selected.name : this.config.defaultOption.name}</span>
             <span class="icon is-small">
               <i class="fas fa-angle-down" aria-hidden="true"></i>
             </span>
@@ -75,7 +80,6 @@ module.exports = class Dropdown extends Component {
 
   select (option) {
     this.selected = option
-    this.emit(`dropdown:${this.name}:select`, option)
 
     this.close()
   }

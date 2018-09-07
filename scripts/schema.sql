@@ -10,7 +10,7 @@ create table topics(
   author char(64),
   permlink char(255),
   category int,
-  foreign key(category) references categories(id)
+  foreign key(category) references categories(id) 
 );
 
 create table replies(
@@ -18,7 +18,7 @@ create table replies(
   parent_id int,
   author char(64),
   permlink char(255),
-  foreign key(parent_id) references topics(id)
+  foreign key(parent_id) references topics(id) on delete cascade
 );
 
 create table hidden_topics(

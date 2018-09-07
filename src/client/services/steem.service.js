@@ -14,8 +14,6 @@ class SteemService {
     steem.config.set('address_prefix', opts.addressPrefix)
     steem.config.set('chain_id', opts.chainId)
 
-    console.log(steem.config)
-
     this.connect = this._createConnectAPI()
   }
 
@@ -81,7 +79,7 @@ class SteemService {
       'videos': [],
       'tokenbb': {
         'account': this.opts.parentPost.author,
-        'category': post.category || 0,
+        'category': post.category || null,
         'tags': []
       }
     }

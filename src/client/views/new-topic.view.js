@@ -1,6 +1,14 @@
 var html = require('choo/html')
 
+var Dropdown = require('../components/Dropdown')
+
 module.exports = newTopic
+
+var dropdownConfig = {
+  defaultOption: {
+    name: 'Uncategorized'
+  }
+}
 
 function newTopic (state, emit) {
   return html`
@@ -16,9 +24,7 @@ function newTopic (state, emit) {
           </div>
 
           <div class="level-item">
-            <select name="category" class="select">
-              <option>uncategorized</option>
-            </select>
+            ${state.cache(Dropdown, 'new-post-category', dropdownConfig).render(state.categories.list)}
           </div>
         </div>
 
@@ -39,9 +45,10 @@ function newTopic (state, emit) {
   function onSubmit (e) {
     e.preventDefault()
 
-    var { category, title, content } = e.target
+    var { title, content } = e.target
+    var category = state.cache(Dropdown, 'new-post-category').selected.id || null
 
-    emit('create-topic', category.value, title.value, content.value)
+    emit('create-topic', category, title.value, content.value)
   }
 }
 

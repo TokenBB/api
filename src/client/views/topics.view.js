@@ -1,6 +1,11 @@
 var html = require('choo/html')
 var Dropdown = require('../components/Dropdown')
-var Tabs = require('../components/Tabs')
+
+var dropdownConfig = {
+  defaultOption: {
+    name: 'Uncategorized'
+  }
+}
 
 module.exports = topics
 
@@ -36,18 +41,20 @@ function topics (state, emit) {
 }
 
 function nav (state, emit) {
+  var { categories } = state
+
   return html`
     <nav class="level">
       <div class="level-left">
         <div class="level-item">
           <div class="" style="min-width: 12rem; text-align: left;">
-          ${state.cache(Dropdown, 'categories').render(state.app.categories)}
+          ${state.cache(Dropdown, 'filter-by-category', dropdownConfig).render(categories.list)}
           </div>
         </div>
       </div>
       
       <div class="level-item">
-        ${state.cache(Tabs, 'tabs').render(state.app.tabs)}
+    
       </div>
 
       <div class="level-right">
@@ -68,7 +75,7 @@ function row (topic, state, emit) {
           ${topic.title}
         </a>
       </td>
-      <td>${topic.metadata.category || 'Uncategorized'}</td>
+      <td>${categoryEl(topic, state)}</td>
       <td>${topic.children}</td>
       <td>${topic.net_votes}</td>
       <td>
@@ -92,9 +99,9 @@ function row (topic, state, emit) {
   }
 }
 
-function avatar (user) {
-  return html`
-    <figure class="image" style="width: 24px; height: 24px; display: inline-block; padding: 0 2px;">
-     <img class="is-rounded" src="https://bulma.io/images/placeholders/256x256.png">
-    </figure>`
+function categoryEl (topic, state) {
+  var id = topic.metadata.tokenbb.category
+  var category = state.categories.byId[id]
+
+  return category ? category.name : 'Uncategorized'
 }

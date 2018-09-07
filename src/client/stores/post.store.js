@@ -1,4 +1,6 @@
+var keyBy = require('lodash.keyBy')
 var postService = require('../services/post.service')
+var wpService = require('../services/wp.service')
 
 module.exports = postStore
 
@@ -6,6 +8,15 @@ function postStore (state, emitter) {
   state.app = {
     categories: [{ name: 'All Categories' }],
     tabs: [{ name: 'Latest' }, { name: 'Top' }]
+  }
+
+  state.categories = {
+    fetching: true,
+    list: [],
+    byId: {},
+    selected: {
+      name: 'Uncategorized'
+    }
   }
 
   state.topics = {
@@ -47,7 +58,6 @@ function postStore (state, emitter) {
     emitter.emit('render')
 
     var author = state.auth.username
-    category = 8
 
     return postService.createTopic(author, category, title, content)
       .then(topic => {
@@ -92,7 +102,7 @@ function postStore (state, emitter) {
 
         emitter.emit('render')
       })
-      .catch(err => {
+      .catch(err => {
         state.topics.loading = false
         emitter.emit('render')
 
@@ -100,7 +110,26 @@ function postStore (state, emitter) {
       })
   }
 
+  function listCategories () {
+    return wpService.listCategories()
+      .then(categories => {
+        var uncategorized = {
+          name: 'Uncategorized'
+        }
+
+        state.categories.fetching = false
+        state.categories.list = [ uncategorized, ...categories]
+        state.categories.byId = keyBy(categories, c => c.id)
+
+        emitter.emit('render')
+      })
+      .catch(err => {
+        console.error('could not fetch categories :(', err)
+      })
+  }
+
   function init () {
     listTopics()
+    listCategories()
   }
 }

@@ -18,12 +18,17 @@ class TopicPage extends Component {
   createElement (state, emit) {
     if (!this.topic) return html`<div><a class="button is-loading"></a></div>`
 
-    return html`
-      <div>
-        <a href="/">◄ Back</a> 
+    var id = this.topic.metadata.tokenbb.category
+    var category = state.categories.byId[id]
 
+    return html`
+      <div class="container">
         <h2 class="title is-1">${this.topic.title}</h2>
-        <p class="subtitle is-5">${this.topic.metadata.category || 'Uncategorized'}</p>
+        <p class="subtitle is-5">
+          <span class="tag">
+            ${category ? category.name : 'Uncategorized'}
+          </span>
+        </p>
 
         ${post(this.topic, this.emit)}
         ${this.topic.replies.map(r => reply(r, this.emit))}
@@ -99,9 +104,7 @@ function post (topic, emit) {
 
     <div class="columns">
       <div class="column is-narrow">
-        <figure class="image" style="width: 64px; height: 64px; display: inline-block; padding: 0 2px;">
-         <img class="is-rounded" src="https://img.busy.org/@${topic.author}">
-        </figure>
+        ${avatar()}
       </div>
       <div class="column is-8">
         <header class="level">
@@ -152,9 +155,7 @@ function reply (data, emit) {
 
       <div class="columns">
         <div class="column is-narrow">
-          <figure class="image" style="width: 64px; height: 64px; display: inline-block; padding: 0 2px;">
-           <img class="is-rounded" src="https://img.busy.org/@${data.author}">
-          </figure>
+          ${avatar()}
         </div>
         <div class="column is-8">
           <nav class="level">
@@ -175,6 +176,13 @@ function reply (data, emit) {
         </div>
       </div>
     </div>`
+}
+
+function avatar () {
+  return html`
+    <figure class="image  is-48x48 avatar">
+      <img class="is-rounded" src="https://bulma.io/images/placeholders/256x256.png">
+    </figure>`
 }
 
 module.exports = function (state, emit) {

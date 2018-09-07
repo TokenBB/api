@@ -6,18 +6,27 @@ function layout (view) {
   return function (state, emit) {
     return html`
       <body>
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-          <div class="navbar-brand">
-            <div class="navbar-item">
-              tokenbb
+        <div class="container">
+          <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+              <a href="/" class="navbar-item">
+                tokenbb
+              </a>
             </div>
-          </div>
-          <div class="navbar-end">
-            <div class="navbar-item">
-              ${profile(state, emit)}
+            
+            <div class="navbar-start">
+              <a href="/settings" class="navbar-item">
+                Settings
+              </a>
             </div>
-          </div>
-        </nav>
+
+            <div class="navbar-end">
+              <div class="navbar-item">
+                ${profile(state, emit)}
+              </div>
+            </div>
+          </nav>
+        </div>
 
         <section class="section">
           ${view(state, emit)}
@@ -31,7 +40,7 @@ function profile (state, emit) {
 
   return html`
     <p>
-      currently logged in as ${state.auth.username}
+      ${state.auth.username}
       (<a onclick=${e => emit('logout')}>logout</a>)
     </p>`
 }
