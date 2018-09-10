@@ -36,7 +36,11 @@ function topics (state, emit) {
     </div>`
 
   function formatTopics (topics) {
-    return topics.map(topic => row(topic, state, emit))
+    return topics
+      .filter(topic => (
+        !state.categories.selected.id ||
+        topic.metadata.tokenbb.category === state.categories.selected.id))
+      .map(topic => row(topic, state, emit))
   }
 }
 

@@ -31,10 +31,18 @@ function postStore (state, emitter) {
   emitter.on('DOMContentLoaded', () => {
     init()
 
+    emitter.on('filter-by-category:select', selectCategoryFilter)
+
     emitter.on('delete-topic', deleteTopic)
     emitter.on('create-topic', createTopic)
     emitter.on('create-reply', createReply)
   })
+
+  function selectCategoryFilter (category) {
+    console.log('category', category)
+    state.categories.selected = category
+    emitter.emit('render')
+  }
 
   function deleteTopic (topic) {
     var msg = 'are you sure you want to delete the topic titled: ' + topic.title + '?'

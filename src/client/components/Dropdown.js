@@ -81,6 +81,8 @@ module.exports = class Dropdown extends Component {
   select (option) {
     this.selected = option
 
+    this.emit(`${this.name}:select`, option)
+
     this.close()
   }
 }
