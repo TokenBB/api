@@ -42,6 +42,20 @@ class SteemService {
     return getContentRepliesAsync(author, permlink)
   }
 
+  broadcastPatch (post) {
+    var args = [
+      post.parent_author,
+      post.parent_permlink,
+      post.author,
+      post.permlink,
+      post.title,
+      post.content,
+      post.metadata
+    ]
+
+    return this._broadcast(args)
+  }
+
   broadcastTopic (topic) {
     var args = [
       this.opts.parentPost.author,

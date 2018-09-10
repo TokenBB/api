@@ -1,5 +1,6 @@
 var html = require('choo/html')
 
+var { samePost } = require('../shared/utils')
 var loadingEl = require('../shared/elements/loading.el')
 var avatarEl = require('../shared/elements/avatar.el')
 
@@ -14,15 +15,189 @@ function topicPage (state, emit) {
 
   return html`
     <div class="container">
-      ${topicTitle(state, emit)}
+      ${topicTitleEl(state, emit)}
 
-      ${post(topic, emit)}
+      ${topicEl(topic, state, emit)}
 
-      ${topic.replies.map(r => replyEl(r, emit))}
+      ${topic.replies.map(reply => replyEl(reply, state, emit))}
 
       <hr>
 
       ${replyFormEl(state, emit)}
+    </div>`
+}
+
+function topicTitleEl (state, emit) {
+  if (false) return editTopicTitleEl(state, emit)
+
+  var topic = state.topic.active
+  var id = topic.metadata.tokenbb.category
+  var category = state.categories.byId[id]
+
+  return html`
+    <header>
+      <h2 class="title is-1">${topic.title}</h2>
+
+      <p class="subtitle is-5">
+        <span class="tag">
+          ${category ? category.name : 'Uncategorized'}
+        </span>
+      </p>
+    </header>`
+}
+
+function editTopicTitleEl (state, emit) {
+  return html`
+    <form>
+      <input type="text" value=${state.topic.edit.post.title}>
+      ${categoryDropdown(state.topic.edit.post.category, emit)}
+      <a class="button">confirm</a><a class="button">cancel</a>
+    </form>
+  `
+}
+
+function categoryDropdown (state, emit) {
+  return html`<select><option>category</option></select>`
+}
+
+function topicEl (topic, state, emit) {
+  return html`
+  <div>
+    <hr>
+
+    <div class="columns">
+      <div class="column is-narrow">
+        ${avatarEl()}
+      </div>
+      <div class="column is-8">
+        <header class="level">
+          <div class="level-left">
+            <div class="level-item">
+              ${topic.author}
+            </div>
+          </div>
+
+          <div class="level-right">
+            <p class="level-item">
+              ${new Date(topic.created).toLocaleString()}
+            </p>
+          </div>
+        </header>
+
+        ${postBody(topic, state, emit)}
+
+        <footer class="level">
+          <div class="level-left"></div>
+          <div class="level-right">
+            <div class="level-item">
+              <p class="buttons">
+
+                ${editPostButtonEl(topic, state, emit)}
+
+              </p>
+            </div>
+          </div>
+        </footer>
+        
+      </div>
+    </div>
+  </div>`
+}
+
+function postBody (post, state, emit) {
+  return state.topic.edit.post && samePost(post, state.topic.edit.post)
+    ? editPostEl(state.topic.edit.post, state, emit)
+    : postContentEl(post, emit)
+}
+
+function postContentEl (post, emit) {
+  return html`
+    <article class="content">
+      ${post.body}
+    </article>`
+}
+
+function editPostEl (post, state, emit) {
+  return html`
+    <form class="form" onsubmit=${onSubmit}>
+
+      <div class="field">
+        <div class="control">
+          <textarea  class="textarea" rows="3" name="content">${post.body}</textarea>
+        </div>
+      </div>
+
+      <p class="buttons">
+        <button class="button ${state.topic.edit.fetching ? 'is-loading' : ''}" role="submit">
+          Save
+        </button>
+        <a class="button" onclick=${onCancel}>
+          Cancel
+        </button>
+      </p>
+    </form>`
+
+  function onSubmit (e) {
+    e.preventDefault()
+
+    emit('topic:edit-post', post, e.target.content.value)
+  }
+
+  function onCancel (e) {
+    emit('topic:hide-edit-post')
+  }
+}
+
+function editPostButtonEl (post, state, emit) {
+  return html`
+    <a class="button is-small" onclick=${e => emit('topic:show-edit-post', post)}>
+      <span class="icon is-small">
+        <i class="fa fa-edit"></i>
+      </span>
+    </a>`
+}
+
+function replyEl (reply, state, emit) {
+  return html`
+    <div>
+
+      <hr>
+
+      <div class="columns">
+        <div class="column is-narrow">
+          ${avatarEl()}
+        </div>
+        <div class="column is-8">
+          <nav class="level">
+            <div class="level-left">
+              <div class="level-item">
+                ${reply.author}
+              </div>
+            </div>
+
+            <div class="level-right">
+              <p class="level-item">
+                ${new Date(reply.created).toLocaleString()}
+              </p>
+            </div>
+          </nav>
+
+          ${postBody(reply, state, emit)}
+
+          <footer class="level">
+            <div class="level-left"></div>
+            <div class="level-right">
+              <div class="level-item">
+                <p class="buttons">
+
+                  ${editPostButtonEl(reply, state, emit)}
+
+                </p>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
     </div>`
 }
 
@@ -60,144 +235,6 @@ function replyFormEl (state, emit) {
 
     var { content } = e.target
 
-    emit('topic:create-reply', topic, content.value)
+    emit('create-reply', topic, content.value)
   }
-}
-
-function topicTitle (state, emit) {
-  if (state.topic.editing.toggled) return editTopicTitle(state, emit)
-
-  var topic = state.topic.active
-  var id = topic.metadata.tokenbb.category
-  var category = state.categories.byId[id]
-
-  return html`
-    <header>
-      <h2 class="title is-1">${topic.title}</h2>
-
-      <p class="subtitle is-5">
-        <span class="tag">
-          ${category ? category.name : 'Uncategorized'}
-        </span>
-      </p>
-    <header>`
-}
-
-function editTopicTitle (state, emit) {
-  return html`
-    <form>
-      <input type="text" value=${state.topic.editing.title}>
-      ${categoryDropdown(state.topic.editing.category, emit)}
-      <a class="button">confirm</a><a class="button">cancel</a>
-    </form>
-  `
-}
-
-function categoryDropdown (state, emit) {
-  return html`<select><option>category</option></select>`
-}
-
-function post (topic, emit) {
-  return html`
-  <div>
-
-    <hr>
-
-    <div class="columns">
-      <div class="column is-narrow">
-        ${avatarEl()}
-      </div>
-      <div class="column is-8">
-        <header class="level">
-          <div class="level-left">
-            <div class="level-item">
-              ${topic.author}
-            </div>
-          </div>
-
-          <div class="level-right">
-            <p class="level-item">
-              ${new Date(topic.created).toLocaleString()}
-            </p>
-          </div>
-        </header>
-
-        <article class="content">
-          ${topic.body}
-        </article>
-
-        ${editPost(topic, emit)}
-
-        <footer class="level">
-          <div class="level-left"></div>
-          <div class="level-right">
-            <div class="level-item">
-              <p class="buttons">
-
-                ${editButton(topic, emit)}
-
-              </p>
-            </div>
-          </div>
-        </footer>
-        
-      </div>
-    </div>
-  </div>`
-}
-
-function editPost (topic, emit) {
-  return html`
-    <form onsubmit=${onSubmit}>
-      <input name="content" type="text" value=${topic.body}>
-      <button>submit</button>
-    </form>`
-
-  function onSubmit (e) {
-    e.preventDefault()
-
-    emit('edit-post', topic, e.target.content.value)
-  }
-}
-
-function editButton (topic, emit) {
-  return ''
-
-  // return html`
-  //   <a class="button">
-  //     <span class="icon">
-  //       <i class="fa fa-edit"></i>
-  //     </span>
-  //   </a>`
-}
-
-function replyEl (data, emit) {
-  return html`
-    <div>
-
-      <hr>
-
-      <div class="columns">
-        <div class="column is-narrow">
-          ${avatarEl()}
-        </div>
-        <div class="column is-8">
-          <nav class="level">
-            <div class="level-left">
-              <div class="level-item">
-                ${data.author}
-              </div>
-            </div>
-
-            <div class="level-right">
-              <p class="level-item">
-                ${new Date(data.created).toLocaleString()}
-              </p>
-            </div>
-          </nav>
-
-          <div class="content">${data.body}</div>
-        </div>
-      </div>
-    </div>`
 }

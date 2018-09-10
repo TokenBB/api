@@ -11,7 +11,7 @@ module.exports = {
 }
 
 function editPost (post, content) {
-  return steem.broadcastTopic(Object.assign(post, { title: content, content }))
+  return steem.broadcastPatch(Object.assign({}, post, { content }))
 }
 
 function deleteTopic (topic) {
