@@ -3,6 +3,7 @@ var devtools = require('choo-devtools')
 
 var authStore = require('./stores/auth.store')
 var postStore = require('./stores/post.store')
+var topicStore = require('./topic/topic.store')
 var router = require('./router')
 var steem = require('./services/steem.service')
 
@@ -22,5 +23,6 @@ app.use(devtools())
 app.use(router)
 app.use(authStore)
 app.use(postStore)
+app.use(topicStore)
 
 app.mount('body')

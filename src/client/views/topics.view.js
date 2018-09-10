@@ -10,7 +10,7 @@ var dropdownConfig = {
 module.exports = topics
 
 function topics (state, emit) {
-  if (state.topics.loading) return html`<div class="button is-loading"></div>`
+  if (state.topics.loading) return html`<div class="container tc"><div class="button is-loading"></div></div>`
 
   return html`
     <div class="container">

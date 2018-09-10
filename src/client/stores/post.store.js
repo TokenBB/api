@@ -31,10 +31,17 @@ function postStore (state, emitter) {
   emitter.on('DOMContentLoaded', () => {
     init()
 
+    emitter.on('edit-post', editPost)
     emitter.on('delete-topic', deleteTopic)
     emitter.on('create-topic', createTopic)
     emitter.on('create-reply', createReply)
   })
+
+  function editPost (topic, content) {
+    return postService.editPost(topic, content).then(() => {
+      console.log('done!')
+    })
+  }
 
   function deleteTopic (topic) {
     var msg = 'are you sure you want to delete the topic titled: ' + topic.title + '?'

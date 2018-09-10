@@ -11,6 +11,11 @@ body {
   min-height: 100vh;
 }
 
+hr {
+  background-color: #007888;
+  height: 1px;
+}
+
 .title, .subtitle {
   color: white;
 }

@@ -16,7 +16,7 @@ class SettingsPage extends Component {
   }
 
   createElement (state, emit) {
-    if (!this.categories) return html`<div><a class="button is-loading"></a></div>`
+    if (!this.categories) return html`<div class="container tc"><a class="button is-loading"></a></div>`
 
     return html`
       <div>

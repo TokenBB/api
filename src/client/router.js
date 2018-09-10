@@ -1,5 +1,4 @@
 var layout = require('./layout')
-var TopicPage = require('./pages/TopicPage')
 var SettingsPage = require('./pages/SettingsPage')
 
 module.exports = router
@@ -10,7 +9,7 @@ function router (state, emitter, app) {
     view: require('./views/topics.view')
   }, {
     route: '/topics/:author/:permlink',
-    view: TopicPage
+    view: require('./topic/topic.page')
   }, {
     route: '/settings',
     view: SettingsPage

@@ -2,11 +2,16 @@ var steem = require('./steem.service')
 var wp = require('./wp.service')
 
 module.exports = {
+  editPost,
   deleteTopic,
   listTopics,
   getTopic,
   createTopic,
   createReply
+}
+
+function editPost (post, content) {
+  return steem.broadcastTopic(Object.assign(post, { title: content, content }))
 }
 
 function deleteTopic (topic) {
