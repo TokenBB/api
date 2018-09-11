@@ -1,4 +1,5 @@
 var html = require('choo/html')
+var alertsEl = require('./alerts/alerts.el')
 
 module.exports = layout
 
@@ -6,6 +7,7 @@ function layout (view) {
   return function (state, emit) {
     return html`
       <body>
+        ${alertsEl(state, emit)}
         <div class="container">
           <nav class="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">

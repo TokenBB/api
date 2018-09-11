@@ -16,6 +16,21 @@ hr {
   height: 1px;
 }
 
+.alert-area {
+  width: 100vw; 
+  height: 100vh; 
+  position: fixed; 
+  left: 0; 
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.notification:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
 .title, .subtitle {
   color: white;
 }
