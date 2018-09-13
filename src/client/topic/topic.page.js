@@ -65,12 +65,12 @@ function topicEl (topic, state, emit) {
   <div>
     <hr>
 
-    <div class="columns">
+    <div class="columns  is-mobile">
       <div class="column is-narrow">
         ${avatarEl()}
       </div>
       <div class="column is-8">
-        <header class="level">
+        <header class="level is-mobile">
           <div class="level-left">
             <div class="level-item">
               ${topic.author}
@@ -86,7 +86,7 @@ function topicEl (topic, state, emit) {
 
         ${postBody(topic, state, emit)}
 
-        <footer class="level">
+        <footer class="level is-mobile">
           <div class="level-left"></div>
           <div class="level-right">
             <div class="level-item">
@@ -163,12 +163,12 @@ function replyEl (reply, state, emit) {
 
       <hr>
 
-      <div class="columns">
+      <div class="columns is-mobile">
         <div class="column is-narrow">
           ${avatarEl()}
         </div>
         <div class="column is-8">
-          <nav class="level">
+          <nav class="level is-mobile">
             <div class="level-left">
               <div class="level-item">
                 ${reply.author}
@@ -184,7 +184,7 @@ function replyEl (reply, state, emit) {
 
           ${postBody(reply, state, emit)}
 
-          <footer class="level">
+          <footer class="level is-mobile">
             <div class="level-left"></div>
             <div class="level-right">
               <div class="level-item">

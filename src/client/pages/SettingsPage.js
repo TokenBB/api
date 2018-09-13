@@ -19,8 +19,10 @@ class SettingsPage extends Component {
     if (!this.categories) return html`<div class="container tc"><a class="button is-loading"></a></div>`
 
     return html`
-      <div>
+      <div class="container">
         <h2 class="title is-4">Settings</h2>
+
+        <h3 class="title is-5">Categories</h3>
         <ul>
           ${this.categories.map(c => html`
             <li>

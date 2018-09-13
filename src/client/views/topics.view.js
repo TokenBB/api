@@ -1,5 +1,6 @@
 var html = require('choo/html')
 var Dropdown = require('../components/Dropdown')
+var loadingEl = require('../shared/elements/loading.el')
 
 var dropdownConfig = {
   defaultOption: {
@@ -7,58 +8,30 @@ var dropdownConfig = {
   }
 }
 
-module.exports = topics
+module.exports = topicsPage
 
-function topics (state, emit) {
-  if (state.topics.loading) return html`<div class="container tc"><div class="button is-loading"></div></div>`
+function topicsPage (state, emit) {
+  if (state.topics.loading) return loadingEl()
 
   return html`
     <div class="container">
       ${nav(state, emit)}
-
       <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th style="width: 30%">Topic</th>
-            <th style="min-width: 20ex">Category</th>
-            <th>Replies</th>
-            <th>Upvotes</th>
-            <th>Pending Payout</th>
-            <th> </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          ${formatTopics(state.topics.list)}
-        </tbody>
-
+        ${theadEl(state, emit)}
+        ${tbodyEl(state, emit)}
       </table>
     </div>`
-
-  function formatTopics (topics) {
-    return topics
-      .filter(topic => (
-        !state.categories.selected.id ||
-        topic.metadata.tokenbb.category === state.categories.selected.id))
-      .map(topic => row(topic, state, emit))
-  }
 }
 
 function nav (state, emit) {
   var { categories } = state
 
   return html`
-    <nav class="level">
+    <nav class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
-          <div class="" style="min-width: 12rem; text-align: left;">
           ${state.cache(Dropdown, 'filter-by-category', dropdownConfig).render(categories.list)}
-          </div>
         </div>
-      </div>
-      
-      <div class="level-item">
-    
       </div>
 
       <div class="level-right">
@@ -71,6 +44,35 @@ function nav (state, emit) {
     </nav>`
 }
 
+function theadEl (state, emit) {
+  return html`
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th>Category</th>
+        <th class="tc">Replies</th>
+        <th class="tc">Upvotes</th>
+        <th class="tc is-hidden-mobile">Pending Payout</th>
+        <th class="tc is-hidden-mobile"></th>
+      </tr>
+    </thead>`
+}
+
+function tbodyEl (state, emit) {
+  return html`<tbody>${formatRows()}</tbody>`
+
+  function formatRows () {
+    return state.topics.list
+      .filter(topic => {
+        return (
+          !state.categories.selected.id ||
+          topic.metadata.tokenbb.category === state.categories.selected.id
+        )
+      })
+      .map(topic => row(topic, state, emit))
+  }
+}
+
 function row (topic, state, emit) {
   return html`
     <tr class="is-vcentered" style="min-height: 3rem; ">
@@ -80,16 +82,16 @@ function row (topic, state, emit) {
         </a>
       </td>
       <td>${categoryEl(topic, state)}</td>
-      <td>${topic.children}</td>
-      <td>${topic.net_votes}</td>
-      <td>
+      <td class="tc">${topic.children}</td>
+      <td class="tc">${topic.net_votes}</td>
+      <td class="tc is-hidden-mobile">
         <div class="select is-small">
           <select>
             <option>${topic.pending_payout_value}</option>
           </select>
         </div>
       </td>
-      <td>
+      <td class="tc is-hidden-mobile">
         <a class="button is-small" onclick=${e => deleteTopic(topic)}>
           <span class="icon is-small">
             <i class="fa fa-trash"></i>

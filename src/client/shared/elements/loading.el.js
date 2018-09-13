@@ -4,7 +4,7 @@ module.exports = loadingEl
 
 function loadingEl () {
   return html`
-    <div class="container tc">
-      <a class="button is-loading"></a>
+    <div class="container tc pv5">
+      <div class="spinner"></div>
     </div>`
 }
