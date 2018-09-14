@@ -25,6 +25,9 @@ app.use(helmet())
 app.use(cors())
 app.use(bodyParser.json())
 
+app.use('/', express.static('public'))
+app.use('/', express.static('dist'))
+
 app.get('/categories', auth, categories.list)
 app.post('/categories/:categoryName', auth, categories.add)
 app.delete('/categories/:categoryName', auth, categories.remove)

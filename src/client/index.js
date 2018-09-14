@@ -8,23 +8,33 @@ var alertStore = require('./alerts/alerts.store')
 var router = require('./router')
 var steem = require('./services/steem.service')
 
-var app = choo()
+if (require.main === module) {
+  var app = getApp()
 
-steem.start({
-  url: process.env.STEEMD_URL,
-  addressPrefix: process.env.ADDRESS_PREFIX,
-  chainId: process.env.CHAIN_ID,
-  parentPost: {
-    author: process.env.APP_ACCOUNT,
-    permlink: process.env.APP_ACCOUNT + '-topics'
-  }
-})
+  app.mount('body')
+} else {
+  module.exports = getApp
+}
 
-app.use(devtools())
-app.use(router)
-app.use(authStore)
-app.use(postStore)
-app.use(topicStore)
-app.use(alertStore)
+function getApp () {
+  var app = choo()
 
-app.mount('body')
+  steem.start({
+    url: process.env.STEEMD_URL,
+    addressPrefix: process.env.ADDRESS_PREFIX,
+    chainId: process.env.CHAIN_ID,
+    parentPost: {
+      author: process.env.APP_ACCOUNT,
+      permlink: process.env.APP_ACCOUNT + '-topics'
+    }
+  })
+
+  app.use(devtools())
+  app.use(router)
+  app.use(authStore)
+  app.use(postStore)
+  app.use(topicStore)
+  app.use(alertStore)
+
+  return app
+}

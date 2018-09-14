@@ -3,11 +3,11 @@ const USERNAME_KEY = process.env.APP_ACCOUNT + ':username'
 
 var steem = require('../services/steem.service')
 
-var storage = window.sessionStorage
-
 module.exports = store
 
 function store (state, emitter, app) {
+  var storage = window.sessionStorage
+
   resetAuthState()
 
   emitter.on('DOMContentLoaded', () => {

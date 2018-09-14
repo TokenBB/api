@@ -5,7 +5,10 @@
   "description": "tokenbb prototype",
   "main": "index.js",
   "scripts": {
-    "start": "run-p watch:*",
+    "start": "npm run watch",
+    "watch": "run-p watch:*",
+    "build": "run-s build:*",
+    "build:client": "node scripts/build-client",
     "watch:server": "nodemon src/server -w src/server",
     "watch:client": "node scripts/watch-client",
     "watch:db": "docker-compose up db",
@@ -26,6 +29,7 @@
   },
   "homepage": "https://github.com/TokenBB/prototype#readme",
   "devDependencies": {
+    "bankai": "^9.15.0",
     "budo": "^11.3.2",
     "bulma": "^0.7.1",
     "choo-devtools": "^2.5.1",
