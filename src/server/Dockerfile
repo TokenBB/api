@@ -1,11 +1,11 @@
 FROM node:carbon-alpine
 
 USER node
-
-WORKDIR /home/node/tokenbb/server
+RUN mkdir -p /home/node/tokenbb-server
+WORKDIR /home/node/tokenbb-server
 
 COPY ./package.json .
 RUN npm install
 COPY . .
 
-CMD [ "node", "index.js" ]
+CMD [ "node", "src/server/index.js" ]

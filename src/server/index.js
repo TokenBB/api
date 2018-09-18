@@ -9,6 +9,8 @@ var cors = require('cors')
 var bodyParser = require('body-parser')
 var steem = require('@steemit/steem-js')
 
+var db = require('./db')
+
 var auth = require('./auth.middleware')
 var categories = require('./routes/categories')
 var topics = require('./routes/topics')
@@ -39,6 +41,8 @@ app.delete('/topics', auth, topics.del)
 
 app.post('/replies', auth, replies.create)
 
-server.listen(PORT, () => {
-  console.log('listening on ', PORT)
+db.start().then(() => {
+  server.listen(PORT, () => {
+    console.log('listening on ', PORT)
+  })
 })

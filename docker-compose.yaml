@@ -10,6 +10,7 @@ services:
       - ./_data/mysql:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=tokenbb
+      - MYSQL_HOST
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_RANDOM_ROOT_PASSWORD
@@ -20,12 +21,33 @@ services:
       context: .
       dockerfile: ./src/server/Dockerfile
     restart: always
-    ports:
-      - '127.0.0.1:8765:8000'
     depends_on:
       - db
     links:
       - db
+    environment:
+      - NODE_ENV
+      - STEEMD_URL
+      - ADDRESS_PREFIX
+      - CHAIN_ID
+      - APP_ACCOUNT
+      - CONNECT_ACCOUNT
+      - HOST
+      - API_URL
+      - BASE_URL
+      - CALLBACK_ROUTE=/
+
+  client:
+    build:
+      context: .
+      dockerfile: ./src/client/Dockerfile
+    restart: always
+    ports:
+      - '127.0.0.1:9966:8080'
+    depends_on:
+      - api
+    links:
+      - api
     environment:
       - NODE_ENV
       - STEEMD_URL
