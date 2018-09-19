@@ -1,0 +1,43 @@
+{
+  "name": "@tokenbb/api-server",
+  "private": true,
+  "version": "0.1.0-alpha",
+  "description": "tokenbb api-server",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TokenBB/prototype.git"
+  },
+  "keywords": [
+    "steem",
+    "tokenbb"
+  ],
+  "author": "kareniel <hello@jonathandupre.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/TokenBB/prototype/issues"
+  },
+  "homepage": "https://github.com/TokenBB/prototype#readme",
+  "devDependencies": {
+    "dotenv": "^6.0.0",
+    "nodemon": "^1.18.3",
+    "standard": "^11.0.1"
+  },
+  "dependencies": {
+    "@steemit/steem-js": "^0.7.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "es6-promisify": "^6.0.0",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0",
+    "lodash.keyby": "^4.6.0",
+    "mysql2": "^1.6.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "sc2-sdk": "^1.0.2",
+    "sqlite3": "^4.0.2"
+  }
+}

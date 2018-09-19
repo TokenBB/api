@@ -1,11 +1,31 @@
-version: '3.3'
+version: '3.4'
 
 services:
+  client:
+    build: 
+      context: ./services/client
+      target: install
+    command: npm run serve
+    volumes:
+      - ./services/client/src:/home/node/client/src
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+      - NODE_ENV
+      - STEEMD_URL
+      - ADDRESS_PREFIX
+      - CHAIN_ID
+      - APP_ACCOUNT
+      - CONNECT_ACCOUNT
+      - APP_URL
+      - API_URL
+      - BASE_URL
+      - CALLBACK_ROUTE=/
+
   db:
     build:
-      context: ./src/db
+      context: ./services/db
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
     volumes:
       - ./_data/mysql:/var/lib/mysql
     environment:
@@ -16,11 +36,11 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD
       - MYSQL_ONETIME_PASSWORD
 
-  api:
+  server:
     build:
-      context: .
-      dockerfile: ./src/server/Dockerfile
-    restart: always
+      context: ./services/server
+      target: install
+    command: ./node_modules/.bin/nodemon src
     depends_on:
       - db
     links:
@@ -36,26 +56,6 @@ services:
       - API_URL
       - BASE_URL
       - CALLBACK_ROUTE=/
-
-  client:
-    build:
-      context: .
-      dockerfile: ./src/client/Dockerfile
-    restart: always
-    ports:
-      - '127.0.0.1:9966:8080'
-    depends_on:
-      - api
-    links:
-      - api
-    environment:
-      - NODE_ENV
-      - STEEMD_URL
-      - ADDRESS_PREFIX
-      - CHAIN_ID
-      - APP_ACCOUNT
-      - CONNECT_ACCOUNT
-      - HOST
-      - API_URL
-      - BASE_URL
-      - CALLBACK_ROUTE=/
+      - MYSQL_HOST
+      - MYSQL_USER
+      - MYSQL_PASSWORD
