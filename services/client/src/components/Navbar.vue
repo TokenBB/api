@@ -1,5 +1,5 @@
 <template>
-  <nav  id="nav" class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <nav  id="nav" class="navbar" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
         <router-link to="/" class="navbar-item">
@@ -29,7 +29,7 @@
               </p>
 
               <p v-if="auth.accessToken === null" class="tr is-right">
-                <a class="button is-primary" :href="auth.loginURL">
+                <a class="button is-primary has-text-white" :href="auth.loginURL">
                   Connect
                 </a>
               </p>
