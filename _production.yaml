@@ -5,7 +5,7 @@ services:
   client:
     build:
       target: production
-    command: budo --dir dist --port 8080 --pushstate
+    command: ./node_modules/.bin/budo --dir dist --port 8080 --pushstate
     volumes:
       - ./services/client/src:/home/node/client/src
 
