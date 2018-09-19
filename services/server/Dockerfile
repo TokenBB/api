@@ -7,3 +7,7 @@ COPY ./package*.json ./
 RUN npm install
 COPY . .
 
+FROM development as production
+
+USER node
+WORKDIR /home/node/server
