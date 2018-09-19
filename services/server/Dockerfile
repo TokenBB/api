@@ -1,4 +1,4 @@
-FROM node:carbon-alpine as install
+FROM node:carbon-alpine as development
 
 USER node
 RUN mkdir -p /home/node/server

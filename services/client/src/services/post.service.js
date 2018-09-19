@@ -1,5 +1,5 @@
 var steem = require('./steem.service')
-var wp = require('./wp.service')
+var wp = require('./api.service')
 
 module.exports = {
   editPost,

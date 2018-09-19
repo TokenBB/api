@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+
+  client:
+    build:
+      target: production
+    command: budo --dir dist --port 8080 --pushstate
+    volumes:
+      - ./services/client/src:/home/node/client/src
+
+  server:
+    build:
+      target: production
+    command: node src
+    volumes:
+      - ./services/server/src:/home/node/server/src

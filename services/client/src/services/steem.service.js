@@ -1,7 +1,8 @@
-var assert = require('assert')
-var steem = require('@steemit/steem-js')
-var { promisify } = require('es6-promisify')
-var sc2 = require('sc2-sdk')
+import assert from 'assert'
+import steem from '@steemit/steem-js'
+import { promisify } from 'es6-promisify'
+
+require('sc2-sdk')
 
 var getContentAsync = promisify(steem.api.getContent)
 var getContentRepliesAsync = promisify(steem.api.getContentReplies)
@@ -111,14 +112,14 @@ class SteemService {
   }
 
   _createConnectAPI () {
-    var api = sc2.Initialize({
-      app: process.env.CONNECT_ACCOUNT,
-      callbackURL: process.env.APP_URL + process.env.CALLBACK_ROUTE,
+    var api = global.sc2.Initialize({
+      app: process.env.VUE_APP_STEEM_CONNECT_ACCOUNT,
+      callbackURL: process.env.VUE_APP_APP_URL + '/',
       accessToken: 'access_token',
       scope: [ 'comment', 'vote' ]
     })
 
-    api.setBaseURL(process.env.BASE_URL)
+    api.setBaseURL(process.env.VUE_APP_STEEM_CONNECT_URL)
 
     return api
   }
@@ -134,4 +135,4 @@ class SteemService {
   }
 }
 
-module.exports = new SteemService()
+export default new SteemService()

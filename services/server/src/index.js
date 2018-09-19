@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const PORT = 8000
+const PORT = 8080
 
 var http = require('http')
 var express = require('express')
@@ -27,19 +27,16 @@ app.use(helmet())
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use('/', express.static('public'))
-app.use('/', express.static('dist'))
+app.get('/api/v1/categories', auth, categories.list)
+app.post('/api/v1/categories/:categoryName', auth, categories.add)
+app.delete('/api/v1/categories/:categoryName', auth, categories.remove)
 
-app.get('/categories', auth, categories.list)
-app.post('/categories/:categoryName', auth, categories.add)
-app.delete('/categories/:categoryName', auth, categories.remove)
+app.get('/api/v1/topics', auth, topics.list)
+app.get('/api/v1/topics/:author/:permlink', auth, topics.get)
+app.post('/api/v1/topics', auth, topics.create)
+app.delete('/api/v1/topics', auth, topics.del)
 
-app.get('/topics', auth, topics.list)
-app.get('/topics/:author/:permlink', auth, topics.get)
-app.post('/topics', auth, topics.create)
-app.delete('/topics', auth, topics.del)
-
-app.post('/replies', auth, replies.create)
+app.post('/api/v1/replies', auth, replies.create)
 
 db.start().then(() => {
   server.listen(PORT, () => {

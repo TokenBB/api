@@ -1,26 +1,36 @@
 version: '3.4'
 
 services:
+
+  proxy:
+    build:
+      context: ./services/proxy
+    command: wait-for client:8080 -- nginx
+    ports:
+      - 127.0.0.1:8080:8080
+    links:
+      - client
+      - server
+    depends_on:
+      - client
+      - server
+
   client:
     build: 
       context: ./services/client
-      target: install
-    command: npm run serve
-    volumes:
-      - ./services/client/src:/home/node/client/src
-    ports:
-      - '127.0.0.1:8080:8080'
+      target: development
+    expose:
+      - "8080"
     environment:
       - NODE_ENV
       - STEEMD_URL
       - ADDRESS_PREFIX
       - CHAIN_ID
       - APP_ACCOUNT
-      - CONNECT_ACCOUNT
+      - STEEM_CONNECT_ACCOUNT
+      - STEEM_CONNECT_URL
       - APP_URL
       - API_URL
-      - BASE_URL
-      - CALLBACK_ROUTE=/
 
   db:
     build:
@@ -39,11 +49,12 @@ services:
   server:
     build:
       context: ./services/server
-      target: install
-    command: ./node_modules/.bin/nodemon src
-    depends_on:
-      - db
+    expose:
+      - "8080"
+    command: node src
     links:
+      - db
+    depends_on:
       - db
     environment:
       - NODE_ENV
@@ -51,11 +62,6 @@ services:
       - ADDRESS_PREFIX
       - CHAIN_ID
       - APP_ACCOUNT
-      - CONNECT_ACCOUNT
-      - HOST
-      - API_URL
-      - BASE_URL
-      - CALLBACK_ROUTE=/
       - MYSQL_HOST
       - MYSQL_USER
       - MYSQL_PASSWORD

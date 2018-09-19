@@ -2,9 +2,9 @@
   <nav  id="nav" class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
-        <a href="/" class="navbar-item">
+        <router-link to="/" class="navbar-item">
           TokenBB
-        </a>
+        </router-link>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
           <span aria-hidden="true"></span>
@@ -41,6 +41,9 @@
 </template>
 
 <script>
+import steem from '../services/steem.service'
+console.log(steem)
+
 export default {
   name: 'Navbar',
   props: {},
@@ -48,7 +51,7 @@ export default {
     auth: {
       accessToken: null,
       username: '',
-      loginURL: ''
+      loginURL: steem.connect.getLoginURL()
     }
   })
 }

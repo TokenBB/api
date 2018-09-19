@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+
+  client:
+    build:
+      target: development
+    command: npm run serve
+    volumes:
+      - ./services/client/src:/home/node/client/src
+      - ./services/client/public:/home/node/client/public
+    environment:
+      - NODE_ENV=development
+      - APP_URL=http://localhost:8080
+      - API_URL=http://localhost:8080/api/v1
+
+  server:
+    build:
+      target: development
+    command: ./node_modules/.bin/nodemon src
+    volumes:
+      - ./services/server/src:/home/node/server/src
+    environment:
+      - NODE_ENV=development
