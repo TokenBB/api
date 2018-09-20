@@ -2,9 +2,16 @@
   <nav  id="nav" class="navbar" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
-        <router-link to="/" class="navbar-item">
-          TokenBB
-        </router-link>
+        <div class="navbar-item">
+          <router-link to="/" class="navbar-item">
+            TokenBB
+          </router-link>
+        </div>
+        <div class="navbar-item">
+          <router-link to="/settings" class="navbar-item">
+            Settings
+          </router-link>
+        </div>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
           <span aria-hidden="true"></span>
@@ -15,11 +22,6 @@
 
       <div class="navbar-menu">
         <div class="navbar-start">
-          <div class="navbar-item">
-            <router-link to="/settings" class="navbar-item">
-              Settings
-            </router-link>
-          </div>
         </div>
 
         <div class="navbar-end">

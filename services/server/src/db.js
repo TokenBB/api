@@ -18,8 +18,10 @@ class DB {
       .catch(err => this._retry(err))
   }
 
-  execute () {
-    return this._connection.execute(...arguments)
+  execute (statement, values, callback) {
+    if (values) return this._connection.execute(statement, values, callback)
+
+    return this._connection.execute(statement, callback)
   }
 
   _retry (err) {

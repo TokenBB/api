@@ -26,17 +26,23 @@
       </div>
     </nav>
 
-    <b-table :loading="true" :data="data" :columns="columns"></b-table>
+    <b-table :loading="fetching" :data="topicList" :columns="columns"></b-table>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   name: 'home',
+  computed: {
+    ...mapState('topics', [
+      'fetching', 
+      'topicList'
+    ])
+  },
   data () {
     return {
-      data: [],
       columns: [
         {
           field: 'title',

@@ -1,7 +1,10 @@
-var requestAsync = require('request-promise')
-var steem = require('./steem.service')
+import steem from '@/services/steem.service'
 
-module.exports = {
+var requestAsync = require('request-promise')
+
+const API_URL = process.env.VUE_APP_APP_URL + '/api/v1'
+
+export default {
   deleteTopic,
   listCategories,
   addCategory,
@@ -18,7 +21,7 @@ function deleteTopic (topic) {
     method: 'DELETE',
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
-    url: process.env.API_URL + '/topics',
+    url: API_URL + '/api//topics',
     body: topic
   }
 
@@ -30,7 +33,7 @@ function listCategories () {
     method: 'GET',
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
-    url: process.env.API_URL + '/categories'
+    url: API_URL + '/categories'
   }
 
   return requestAsync(opts)
@@ -41,7 +44,7 @@ function addCategory (name) {
     method: 'POST',
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
-    url: process.env.API_URL + '/categories/' + name
+    url: API_URL + '/categories/' + name
   }
 
   return requestAsync(opts)
@@ -52,14 +55,14 @@ function removeCategory (name) {
     method: 'DELETE',
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
-    url: process.env.API_URL + '/categories/' + name
+    url: API_URL + '/categories/' + name
   }
 
   return requestAsync(opts)
 }
 
 function listValidTopics (category) {
-  var url = process.env.API_URL + '/topics'
+  var url = API_URL + '/topics'
 
   if (category) url = url + `?category=${category}`
 
@@ -75,7 +78,7 @@ function listValidTopics (category) {
 
 function listValidReplies (post) {
   var { author, permlink } = post
-  var url = process.env.API_URL + `/replies?author=${author}&permlink=${permlink}`
+  var url = API_URL + `/replies?author=${author}&permlink=${permlink}`
 
   var opts = {
     method: 'GET',
@@ -92,7 +95,7 @@ function publishTopic (message) {
 
   var opts = {
     method: 'POST',
-    url: process.env.API_URL + `/topics`,
+    url: API_URL + `/topics`,
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
     body: {
@@ -109,7 +112,7 @@ function publishReply (parent, message) {
 
   var opts = {
     method: 'POST',
-    url: process.env.API_URL + `/replies`,
+    url: API_URL + `/replies`,
     json: true,
     headers: { authorization: steem.connect.options.accessToken },
     body: {
@@ -125,7 +128,7 @@ function publishReply (parent, message) {
 function getValidTopic (author, permlink) {
   var opts = {
     method: 'GET',
-    url: process.env.API_URL + `/topics/${author}/${permlink}`,
+    url: API_URL + `/topics/${author}/${permlink}`,
     json: true,
     headers: { authorization: steem.connect.options.accessToken }
   }

@@ -76,6 +76,7 @@ export default {
       if (this.$route.query.access_token) this.storeSession()
 
       this.loadSession()
+      this.fetchTopics()
     })
   },
   methods: {
@@ -84,6 +85,9 @@ export default {
     },
     loadSession () {
       this.$store.commit('auth/loadSession')
+    },
+    fetchTopics () {
+      this.$store.dispatch('topics/fetchAll')
     }
   }
 }

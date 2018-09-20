@@ -27,10 +27,14 @@ function del (req, res) {
 function list (req, res) {
   var { category } = req.query
 
+  console.log('list topics!', category)
+
   var statement = 'select * from topics'
   if (category) statement += ' where category = ?'
 
   var values = category ? [ category ] : null
+
+  console.log(statement, values)
 
   db.execute(statement, values, (err, rows) => {
     if (err) return console.log(err, res.status(500).end())

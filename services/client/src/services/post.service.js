@@ -1,7 +1,7 @@
-var steem = require('./steem.service')
-var wp = require('./api.service')
+import steem from '@/services/steem.service'
+import api from '@/services/api.service'
 
-module.exports = {
+export default {
   editPost,
   deleteTopic,
   listTopics,
@@ -15,12 +15,12 @@ function editPost (post, content) {
 }
 
 function deleteTopic (topic) {
-  return wp.deleteTopic(topic)
+  return api.deleteTopic(topic)
 }
 
 function listTopics (category) {
   var promises = [
-    wp.listValidTopics(category),
+    api.listValidTopics(category),
     steem.listAllTopics()
   ]
 
@@ -35,7 +35,7 @@ function listTopics (category) {
 function getTopic (author, permlink) {
   var validReplies
 
-  return wp.getValidTopic(author, permlink)
+  return api.getValidTopic(author, permlink)
     .then(validTopic => {
       if (!validTopic) return null
 
@@ -63,7 +63,7 @@ function createTopic (author, category, title, content) {
   }
 
   return steem.broadcastTopic(message)
-    .then(topic => wp.publishTopic(topic).then(() => topic))
+    .then(topic => api.publishTopic(topic).then(() => topic))
 }
 
 function createReply (parent, author, content) {
@@ -76,7 +76,7 @@ function createReply (parent, author, content) {
   }
 
   return steem.broadcastReply(parent, message)
-    .then(reply => wp.publishReply(parent, message).then(() => reply))
+    .then(reply => api.publishReply(parent, message).then(() => reply))
 }
 
 // -----------------------------------------------------------------------------
