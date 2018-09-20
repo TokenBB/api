@@ -2,20 +2,12 @@ import steem from '@/services/steem.service'
 import api from '@/services/api.service'
 
 export default {
-  editPost,
-  deleteTopic,
   listTopics,
   getTopic,
+  editPost,
+  deleteTopic,
   createTopic,
   createReply
-}
-
-function editPost (post, content) {
-  return steem.broadcastPatch(Object.assign({}, post, { content }))
-}
-
-function deleteTopic (topic) {
-  return api.deleteTopic(topic)
 }
 
 function listTopics (category) {
@@ -24,12 +16,26 @@ function listTopics (category) {
     steem.listAllTopics()
   ]
 
-  return Promise.all(promises).then(([ validTopics, topics ]) => {
-    topics = filterInvalidPosts(validTopics, topics)
-    topics = exposePostsMetadata(topics)
+  return Promise.all(promises).then(([ validTopicPosts, topicPosts ]) => {
+    var filtered = filterInvalidPosts(validTopicPosts, topicPosts)
 
-    return topics
+    return filtered.map(postToTopic)
   })
+}
+
+function postToTopic (post) {
+  var { tokenbb } = JSON.parse(post.json_metadata)
+
+  return {
+    categoryId: tokenbb.category,
+    author: post.author,
+    permlink: post.permlink,
+    title: post.title,
+    created: post.created,
+    pendingPayout: post.total_pending_payout_value,
+    body: post.body,
+    numberOfReplies: post.children
+  }
 }
 
 function getTopic (author, permlink) {
@@ -51,6 +57,14 @@ function getTopic (author, permlink) {
 
       return topic
     })
+}
+
+function editPost (post, content) {
+  return steem.broadcastPatch(Object.assign({}, post, { content }))
+}
+
+function deleteTopic (topic) {
+  return api.deleteTopic(topic)
 }
 
 function createTopic (author, category, title, content) {

@@ -77,6 +77,7 @@ export default {
 
       this.loadSession()
       this.fetchTopics()
+      this.fetchCategories()
     })
   },
   methods: {
@@ -88,6 +89,9 @@ export default {
     },
     fetchTopics () {
       this.$store.dispatch('topics/fetchAll')
+    },
+    fetchCategories () {
+      this.$store.dispatch('categories/fetchAll')
     }
   }
 }

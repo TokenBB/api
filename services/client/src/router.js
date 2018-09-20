@@ -24,7 +24,7 @@ export default new Router({
       component: () => import('./views/NewTopic.vue')
     },
     {
-      path: '/topic',
+      path: '/topic/:author/:permlink',
       name: 'topic',
       component: () => import('./views/Topic.vue')
     }

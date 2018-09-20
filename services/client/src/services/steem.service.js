@@ -33,10 +33,9 @@ class SteemService {
   }
 
   listAllTopics () {
-    return getContentRepliesAsync(
-      this.opts.parentPost.author,
-      this.opts.parentPost.permlink
-    )
+    var { author, permlink } = this.opts.parentPost
+
+    return getContentRepliesAsync(author, permlink)
   }
 
   listReplies (author, permlink) {

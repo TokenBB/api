@@ -3,8 +3,8 @@
     <div class="container">
       <div class="navbar-brand">
         <div class="navbar-item">
-          <router-link to="/" class="navbar-item">
-            TokenBB
+          <router-link to="/" exact-active-class="noop" class="navbar-item">
+            <h1 class="is-primary">TokenBB</h1>
           </router-link>
         </div>
         <div class="navbar-item">
