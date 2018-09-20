@@ -5,7 +5,7 @@
       <div class="level-left">
         <div class="level-item">
           <b-dropdown hoverable>
-              <button class="button is-info" slot="trigger">
+              <button class="button" slot="trigger">
                   <span>All categories</span>
                   <b-icon icon="menu-down"></b-icon>
               </button>
@@ -19,14 +19,14 @@
 
       <div class="level-right">
         <div class="level-item">
-          <a href="/new" class="button has-icon">
+          <router-link to="/new" class="button has-icon">
             New Topic
-          </a>
+          </router-link>
         </div>
       </div>
     </nav>
 
-    <b-table :data="data" :columns="columns"></b-table>
+    <b-table :loading="true" :data="data" :columns="columns"></b-table>
   </div>
 </template>
 

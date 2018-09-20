@@ -6,8 +6,7 @@ var env = [
   'APP_ACCOUNT',
   'STEEM_CONNECT_ACCOUNT',
   'STEEM_CONNECT_URL',
-  'APP_URL',
-  'API_URL'
+  'APP_URL'
 ]
 
 env.forEach(envVar => {

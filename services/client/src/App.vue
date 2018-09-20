@@ -65,6 +65,26 @@ import Navbar from './components/Navbar.vue'
 export default {
   components: {
     Navbar
+  },
+  data () {
+    return {
+
+    }
+  },
+  mounted () {
+    this.$nextTick(function () {
+      if (this.$route.query.access_token) this.storeSession()
+
+      this.loadSession()
+    })
+  },
+  methods: {
+    storeSession () {
+      this.$store.commit('auth/storeSession')
+    },
+    loadSession () {
+      this.$store.commit('auth/loadSession')
+    }
   }
 }
 </script>

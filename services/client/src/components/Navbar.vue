@@ -24,12 +24,12 @@
 
         <div class="navbar-end">
           <div class="navbar-item is-expanded tr">
-              <p v-if="auth.accessToken !== null" class="tr">
-                {{ auth.username }} (<a @click="logout">logout</a>)
+              <p v-if="$store.state.auth.accessToken" class="tr">
+                {{ $store.state.auth.username }} (<a @click="logout">logout</a>)
               </p>
 
-              <p v-if="auth.accessToken === null" class="tr is-right">
-                <a class="button is-primary has-text-white" :href="auth.loginURL">
+              <p v-if="!$store.state.auth.accessToken" class="tr is-right">
+                <a class="button is-info has-text-white" :href="loginURL">
                   Connect
                 </a>
               </p>
@@ -42,18 +42,19 @@
 
 <script>
 import steem from '../services/steem.service'
-console.log(steem)
 
 export default {
   name: 'Navbar',
-  props: {},
-  data: () => ({
-    auth: {
-      accessToken: null,
-      username: '',
+  data () {
+    return {
       loginURL: steem.connect.getLoginURL()
     }
-  })
+  },
+  methods: {
+    logout () {
+      this.$store.commit('auth/logout')
+    }
+  }
 }
 </script>
 
