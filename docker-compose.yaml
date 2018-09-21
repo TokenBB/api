@@ -6,6 +6,8 @@ services:
     build:
       context: ./services/proxy
     command: wait-for client:8080 -- nginx
+    logging:
+      driver: none
     ports:
       - 127.0.0.1:8080:8080
     links:
@@ -35,7 +37,8 @@ services:
   db:
     build:
       context: ./services/db
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --general_log=1 --general_log_file=/tmp/query.log
+
     volumes:
       - ./_data/mysql:/var/lib/mysql
     environment:

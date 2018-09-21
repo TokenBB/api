@@ -22,6 +22,8 @@ steem.start({
 
 Vue.use(Buefy)
 
+global.router = router
+
 new Vue({
   router,
   store,
