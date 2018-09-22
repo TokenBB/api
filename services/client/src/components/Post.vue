@@ -20,16 +20,47 @@
         </div>
       </header>
 
-      <article class="content has-text-left">
+      <article v-if="!editing" class="content has-text-left">
         {{ data.body }}
       </article>
+
+      <form v-if="editing">
+        <b-field>
+          <b-input type="textarea"
+            :loading="fetching"
+            :disabled="fetching"
+            v-model="text"
+            placeholder="Type here.">
+          </b-input>
+        </b-field>
+
+        <b-field>
+          <p class="control">
+            <a class="button is-primary" 
+              :class="{ 'is-loading': this.fetching }" 
+              @click="onSave">
+              Save
+            </a>
+          </p>
+
+          <p class="control">
+            <a class="button" 
+              :disabled="this.fetching"
+              @click="onCancel">
+              Cancel
+            </a>
+          </p>
+        </b-field>
+      </form>
 
       <footer class="level is-mobile">
         <div class="level-left"></div>
         <div class="level-right">
           <div class="level-item">
             <p class="buttons">
-              <a v-if="editable" class="button is-small has-icon">
+              <a v-if="editable && !editing"
+                @click="onStartEditing"
+                class="button is-small has-icon">
                 <b-icon
                   icon="square-edit-outline"
                   size="is-small">
@@ -61,9 +92,42 @@ export default {
       return this.data.author === this.$store.state.auth.username
     }
   },
+  methods: {
+    onStartEditing () {
+      this.text = this.data.body
+      this.editing = true
+    },
+    onSave () {
+      this.fetching = true
+
+      var payload = {
+        post: this.data,
+        content: this.text
+      }
+
+      this.$store.dispatch('posts/editPost', payload)
+        .then(post => {
+          this.data.body = post.body
+          this.editing = false
+          this.fetching = false
+        })
+        .catch(err => {
+          console.error(err)
+          this.fetching = false
+        })
+    },
+    onCancel () {
+      if (this.fetching) return
+
+      this.text = ''
+      this.editing = false
+    }
+  },
   data () {
     return {
-
+      fetching: false,
+      editing: false,
+      text: ''
     }
   }
 }

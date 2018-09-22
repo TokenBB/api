@@ -5,6 +5,7 @@ import auth from '@/store/auth.store'
 import topics from '@/store/topics.store'
 import categories from '@/store/categories.store'
 import replies from '@/store/replies.store'
+import posts from '@/store/posts.store'
 
 Vue.use(Vuex)
 
@@ -13,6 +14,7 @@ export default new Vuex.Store({
     auth,
     topics,
     categories,
-    replies
+    replies,
+    posts
   }
 })
