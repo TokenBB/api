@@ -8,8 +8,6 @@ services:
     command: ./node_modules/.bin/budo --dir dist --port 8080 --pushstate
     volumes:
       - ./services/client/src:/home/node/client/src
-    environment:
-      - NODE_ENV=production
 
   server:
     build:
