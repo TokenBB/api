@@ -12,9 +12,22 @@ export default {
     },
     updateTopicList (state, topics) {
       state.topicList = topics
+    },
+    addTopic (state, topic) {
+      state.topicList.push(topic)
     }
   },
   actions: {
+    createTopic ({ commit }, { title, category, content }) {
+      var author = this.state.auth.username
+
+      return postService.createTopic(author, category, title, content)
+        .then(topic => {
+          commit('addTopic', topic)
+
+          return topic
+        })
+    },
     fetchAll ({ commit }) {
       commit('setFetching', true)
 

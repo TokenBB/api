@@ -3,20 +3,10 @@
     <nav class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
-          <b-dropdown v-on:change="onSelectCategory">
-            <button class="button" type="button" slot="trigger">
-              <span>{{ selectedCategory.name }}</span>
-              <b-icon icon="menu-down"></b-icon>
-            </button>
-
-            <b-dropdown-item :value="allCategories">
-              {{ allCategories.name }}
-            </b-dropdown-item>
-
-            <b-dropdown-item v-for="category in categoryList" :value="category">
-              {{ category.name }}
-            </b-dropdown-item>
-          </b-dropdown>
+          <CategoryDropdown
+            :selected="selectedCategory"
+            @change="onSelectCategory">
+          </CategoryDropdown>
         </div>
       </div>
 
@@ -61,21 +51,24 @@
 <script>
 import { mapState } from 'vuex'
 
-var allCategories = { name: 'All Categories' }
+import CategoryDropdown from '@/components/CategoryDropdown.vue'
 
 export default {
   name: 'home',
+  components: {
+    CategoryDropdown
+  },
   computed: {
     ...mapState('topics', [
       'fetching'
     ]),
     ...mapState('categories', [
-      'fetching',
-      'categoryList',
       'categoriesById'
     ]),
     topicList () {
-      if (!this.selectedCategory.id) return this.$store.state.topics.topicList
+      if (!this.selectedCategory || !this.selectedCategory.id) { 
+        return this.$store.state.topics.topicList
+      }
 
       return this.$store.state.topics.topicList.filter(topic => {
         return topic.categoryId === this.selectedCategory.id
@@ -95,8 +88,7 @@ export default {
   },
   data () {
     return {
-      allCategories,
-      selectedCategory: allCategories
+      selectedCategory: null
     }
   }
 }
