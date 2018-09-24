@@ -4,13 +4,15 @@ if (process.env.NODE_ENV !== 'production') {
 
 var request = require('request')
 
+const HOST = process.env.STEEM_CONNECT_HOST || 'https://connect.tokenbb.io'
+
 module.exports = auth
 
 function auth (req, res, next) {
   var opts = {
     json: true,
     method: 'GET',
-    url: 'https://connect.tokenbb.io/api/me',
+    url: HOST + '/api/me',
     headers: {
       authorization: req.headers.authorization
     }

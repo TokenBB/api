@@ -2,7 +2,7 @@ import steem from '@/services/steem.service'
 
 var requestAsync = require('request-promise')
 
-const API_URL = process.env.VUE_APP_APP_URL + '/api/v1'
+const API_URL = process.env.BASE_URL + '/api/v1'
 
 export default {
   deleteTopic,

@@ -4,7 +4,8 @@
   "version": "0.1.0-alpha",
   "description": "tokenbb prototype",
   "scripts": {
-    "start": "docker-compose -f docker-compose.yaml -f _development.yaml up"
+    "start": "npm run watch",
+    "watch": "docker-compose -f docker-compose.yaml -f _development.yaml up"
   },
   "repository": {
     "type": "git",

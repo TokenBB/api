@@ -11,13 +11,8 @@ import './registerServiceWorker'
 Vue.config.productionTip = false
 
 steem.start({
-  url: process.env.VUE_APP_STEEMD_URL,
-  addressPrefix: process.env.VUE_APP_ADDRESS_PREFIX,
-  chainId: process.env.VUE_APP_CHAIN_ID,
-  parentPost: {
-    author: process.env.VUE_APP_APP_ACCOUNT,
-    permlink: process.env.VUE_APP_APP_ACCOUNT + '-topics'
-  }
+  account: process.env.VUE_APP_STEEM_APP_ACCOUNT,
+  network: process.env.VUE_APP_STEEM_NETWORK
 })
 
 Vue.use(Buefy)

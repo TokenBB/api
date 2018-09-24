@@ -8,6 +8,7 @@ var helmet = require('helmet')
 var cors = require('cors')
 var bodyParser = require('body-parser')
 var steem = require('@steemit/steem-js')
+var networks = require('steem-networks')
 
 var db = require('./db')
 
@@ -19,9 +20,11 @@ var replies = require('./routes/replies')
 var app = express()
 var server = http.createServer(app)
 
-steem.api.setOptions({ url: process.env.STEEMD_URL })
-steem.config.set('address_prefix', process.env.ADDRESS_PREFIX)
-steem.config.set('chain_id', process.env.CHAIN_ID)
+const network = networks[process.env.STEEM_NETWORK || 'steem_vc']
+
+steem.api.setOptions({ url: network.rpc })
+steem.config.set('address_prefix', network.prefix)
+steem.config.set('chain_id', network.chainId)
 
 app.use(helmet())
 app.use(cors())

@@ -20,34 +20,9 @@ services:
   client:
     build: 
       context: ./services/client
-      target: development
+      target: base
     expose:
       - "8080"
-    environment:
-      - NODE_ENV
-      - STEEMD_URL
-      - ADDRESS_PREFIX
-      - CHAIN_ID
-      - APP_ACCOUNT
-      - STEEM_CONNECT_ACCOUNT
-      - STEEM_CONNECT_URL
-      - APP_URL
-      - API_URL
-
-  db:
-    build:
-      context: ./services/db
-    command: --default-authentication-plugin=mysql_native_password --general_log=1 --general_log_file=/tmp/query.log
-
-    volumes:
-      - ./_data/mysql:/var/lib/mysql
-    environment:
-      - MYSQL_DATABASE=tokenbb
-      - MYSQL_HOST
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_RANDOM_ROOT_PASSWORD
-      - MYSQL_ONETIME_PASSWORD
 
   server:
     build:
@@ -59,12 +34,3 @@ services:
       - db
     depends_on:
       - db
-    environment:
-      - NODE_ENV
-      - STEEMD_URL
-      - ADDRESS_PREFIX
-      - CHAIN_ID
-      - APP_ACCOUNT
-      - MYSQL_HOST
-      - MYSQL_USER
-      - MYSQL_PASSWORD

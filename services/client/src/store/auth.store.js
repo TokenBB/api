@@ -1,8 +1,8 @@
 import steem from '@/services/steem.service'
 import router from '@/router'
 
-const ACCESS_TOKEN_KEY = process.env.APP_ACCOUNT + ':access-token'
-const USERNAME_KEY = process.env.APP_ACCOUNT + ':username'
+const ACCESS_TOKEN_KEY = process.env.VUE_APP_STEEM_APP_ACCOUNT + ':access-token'
+const USERNAME_KEY = process.env.VUE_APP_STEEM_APP_ACCOUNT + ':username'
 
 export default {
   namespaced: true,

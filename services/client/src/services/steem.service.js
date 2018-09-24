@@ -1,6 +1,7 @@
 import assert from 'assert'
 import steem from '@steemit/steem-js'
 import { promisify } from 'es6-promisify'
+import networks from 'steem-networks'
 
 require('sc2-sdk')
 
@@ -10,10 +11,16 @@ var getContentRepliesAsync = promisify(steem.api.getContentReplies)
 class SteemService {
   start (opts) {
     this.opts = this._validateOptions(opts)
+    this.network = networks[opts.network]
 
-    steem.api.setOptions({ url: opts.url })
-    steem.config.set('address_prefix', opts.addressPrefix)
-    steem.config.set('chain_id', opts.chainId)
+    this.opts.parentPost = {
+      author: this.opts.account,
+      permlink: this.opts.account + '-topics'
+    }
+
+    steem.api.setOptions({ url: this.network.rpc })
+    steem.config.set('address_prefix', this.network.prefix)
+    steem.config.set('chain_id', this.network.chainId)
 
     this.connect = this._createConnectAPI()
   }
@@ -113,18 +120,18 @@ class SteemService {
   _createConnectAPI () {
     var api = global.sc2.Initialize({
       app: process.env.VUE_APP_STEEM_CONNECT_ACCOUNT,
-      callbackURL: process.env.VUE_APP_APP_URL + '/',
+      callbackURL: process.env.BASE_URL,
       accessToken: 'access_token',
       scope: [ 'comment', 'vote' ]
     })
 
-    api.setBaseURL(process.env.VUE_APP_STEEM_CONNECT_URL)
+    api.setBaseURL(process.env.VUE_APP_STEEM_CONNECT_HOST)
 
     return api
   }
 
   _validateOptions (opts) {
-    var required = [ 'url', 'addressPrefix', 'chainId', 'parentPost' ]
+    var required = [ 'network', 'account' ]
 
     required.forEach(key => {
       assert.ok(opts[key], `SteemService: options '${key}' is required`)
