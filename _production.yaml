@@ -6,24 +6,16 @@ services:
     build:
       target: production
       args:
-        - NODE_ENV
-        - HOST_URL
-        - STEEM_NETWORK
-        - STEEM_APP_ACCOUNT
-        - STEEM_CONNECT_HOST
-        - STEEM_CONNECT_ACCOUNT
-    command: ./node_modules/.bin/budo --dir dist --port 8080 --pushstate
-    env_file:
-      - ./.env
-      - ./.env.production
-    environment:
-      - NODE_ENV=production
+        - NODE_ENV=production
+        - HOST_URL=${HOST_URL}
+        - STEEM_NETWORK=${STEEM_NETWORK}
+        - STEEM_APP_ACCOUNT=${STEEM_APP_ACCOUNT}
+        - STEEM_CONNECT_HOST=${STEEM_CONNECT_HOST}
+        - STEEM_CONNECT_ACCOUNT=${STEEM_CONNECT_ACCOUNT}
 
   server:
     build:
       target: production
     command: node src
-    env_file:
-      - ./production.env
     environment:
       - NODE_ENV=production

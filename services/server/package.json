@@ -38,6 +38,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "sc2-sdk": "^1.0.2",
-    "sqlite3": "^4.0.2"
+    "sqlite3": "^4.0.2",
+    "steem-networks": "^1.0.2"
   }
 }

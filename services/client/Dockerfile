@@ -19,10 +19,10 @@ ARG STEEM_APP_ACCOUNT
 ARG STEEM_CONNECT_HOST
 ARG STEEM_CONNECT_ACCOUNT
 
-RUN npm run build
+RUN ["npm", "run", "build"]
 
 # production
 FROM nginx:stable-alpine as production
 
-COPY --from build /home/node/client/dist /usr/share/nginx/html
-USER nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /home/node/client/dist /usr/share/nginx/html

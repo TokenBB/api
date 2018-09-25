@@ -10,6 +10,8 @@ services:
       driver: none
     ports:
       - 127.0.0.1:8080:8080
+    env_file:
+      - .env
     links:
       - client
       - server
@@ -21,6 +23,8 @@ services:
     build: 
       context: ./services/client
       target: base
+    env_file:
+      - .env
     expose:
       - "8080"
 
@@ -29,8 +33,5 @@ services:
       context: ./services/server
     expose:
       - "8080"
-    command: node src
-    links:
-      - db
-    depends_on:
-      - db
+    env_file:
+      - .env
