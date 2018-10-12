@@ -1,9 +1,15 @@
-# base
-FROM node:carbon-alpine as base
+FROM node:carbon-alpine as node
+
+ENV SRC=/home/node/client
+ENV DEST=/usr/share/nginx/html
 
 USER node
-RUN mkdir -p /home/node/client
-WORKDIR /home/node/client
+
+# base
+FROM node as base
+
+RUN mkdir -p ${SRC}
+WORKDIR ${SRC}
 COPY ./package*.json ./
 RUN npm install
 COPY . .
@@ -22,7 +28,7 @@ ARG STEEM_CONNECT_ACCOUNT
 RUN ["npm", "run", "build"]
 
 # production
-FROM nginx:stable-alpine as production
+FROM node as production
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /home/node/client/dist /usr/share/nginx/html
+COPY --from=build ${SRC}/dist ${DEST}

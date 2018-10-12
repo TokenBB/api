@@ -12,6 +12,7 @@ services:
         - STEEM_APP_ACCOUNT=${STEEM_APP_ACCOUNT}
         - STEEM_CONNECT_HOST=${STEEM_CONNECT_HOST}
         - STEEM_CONNECT_ACCOUNT=${STEEM_CONNECT_ACCOUNT}
+    command: nginx
 
   server:
     build:
