@@ -64,3 +64,4 @@ _data
 .DS_Store
 dist
 .env.production
+**/node_modules

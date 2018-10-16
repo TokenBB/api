@@ -22,6 +22,7 @@
     "request-promise": "^4.2.2",
     "sc2-sdk": "^1.1.0",
     "steem-networks": "^1.0.2",
+    "steemconnect": "^2.0.1",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",

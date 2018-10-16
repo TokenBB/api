@@ -2,10 +2,9 @@ import assert from 'assert'
 import steem from '@steemit/steem-js'
 import { promisify } from 'es6-promisify'
 import networks from 'steem-networks'
+import sc2 from 'steemconnect'
 
 console.log(steem)
-
-require('sc2-sdk')
 
 var getContentAsync = promisify(steem.api.getContent)
 var getContentRepliesAsync = (author, permlink) => steem.api.callAsync('condenser_api', 'get_content_replies', [ author, permlink ])
@@ -120,7 +119,7 @@ class SteemService {
   }
 
   _createConnectAPI () {
-    var api = global.sc2.Initialize({
+    var api = sc2.Initialize({
       app: process.env.VUE_APP_STEEM_CONNECT_ACCOUNT,
       callbackURL: process.env.BASE_URL,
       accessToken: 'access_token',
