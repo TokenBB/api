@@ -3,10 +3,12 @@ import steem from '@steemit/steem-js'
 import { promisify } from 'es6-promisify'
 import networks from 'steem-networks'
 
+console.log(steem)
+
 require('sc2-sdk')
 
 var getContentAsync = promisify(steem.api.getContent)
-var getContentRepliesAsync = promisify(steem.api.getContentReplies)
+var getContentRepliesAsync = (author, permlink) => steem.api.callAsync('condenser_api', 'get_content_replies', [ author, permlink ])
 
 class SteemService {
   start (opts) {

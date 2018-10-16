@@ -3,10 +3,12 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve  --host 0.0.0.0",
+    "start": "npm run serve",
+    "serve": "vue-cli-service serve --host 0.0.0.0",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "standard --fix"
+    "test": "standard --fix",
+    "postinstall": "cp ./_secure-random.patch.js ./node_modules/secure-random/lib/secure-random.js"
   },
   "browser": {
     "request": "xhr"
@@ -31,6 +33,7 @@
     "@vue/cli-plugin-pwa": "^3.0.3",
     "@vue/cli-service": "^3.0.3",
     "@vue/eslint-config-standard": "^3.0.3",
+    "dotenv": "^6.1.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "standard": "^12.0.1",

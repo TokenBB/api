@@ -2,36 +2,27 @@ version: '3.4'
 
 services:
 
-  proxy:
-    build:
-      context: ./services/proxy
-    command: wait-for client:8080 -- nginx
-    logging:
-      driver: none
-    ports:
-      - 127.0.0.1:8080:8080
-    env_file:
-      - .env
-    links:
-      - client
-      - server
-    depends_on:
-      - client
-      - server
-
-  client:
-    build: 
-      context: ./services/client
-      target: base
-    env_file:
-      - .env
-    expose:
-      - "8080"
-
   server:
     build:
       context: ./services/server
-    expose:
-      - "8080"
+      target: development
+    command: ./node_modules/.bin/nodemon src
+    volumes:
+      - ./services/server/src:/home/node/server/src
+    ports:
+      - 127.0.0.1:9090:8080
     env_file:
       - .env
+    environment:
+      - NODE_ENV=development
+    links:
+      - db
+
+  db:
+    build:
+      context: ./services/db
+    command: --default-authentication-plugin=mysql_native_password --general_log=1 --general_log_file=/tmp/query.log
+    volumes:
+      - ./_data/mysql:/var/lib/mysql
+    env_file:
+      - ./.env

@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../../.env' })
+
 var env = [
   'HOST_URL',
   'STEEM_NETWORK',
