@@ -11,3 +11,4 @@ FROM development as production
 
 USER node
 WORKDIR /home/node/server
+CMD ["node", "src"]
