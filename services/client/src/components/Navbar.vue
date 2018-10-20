@@ -13,14 +13,14 @@
           </router-link>
         </div>
 
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <a role="button" class="navbar-burger" :class="{ 'is-active': menuActive }" aria-label="menu" aria-expanded="false" @click="toggleMenu">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div class="navbar-menu">
+      <div class="navbar-menu" :class="{ 'is-active': menuActive }">
         <div class="navbar-start">
         </div>
 
@@ -49,10 +49,14 @@ export default {
   name: 'Navbar',
   data () {
     return {
-      loginURL: steem.connect.getLoginURL()
+      loginURL: steem.connect.getLoginURL(),
+      menuActive: false
     }
   },
   methods: {
+    toggleMenu () {
+      this.menuActive = !this.menuActive
+    },
     logout () {
       this.$store.commit('auth/logout')
     }

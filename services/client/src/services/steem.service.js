@@ -4,10 +4,8 @@ import { promisify } from 'es6-promisify'
 import networks from 'steem-networks'
 import sc2 from 'steemconnect'
 
-console.log(steem)
-
 var getContentAsync = promisify(steem.api.getContent)
-var getContentRepliesAsync = (author, permlink) => steem.api.callAsync('condenser_api', 'get_content_replies', [ author, permlink ])
+var getContentRepliesAsync = (author, permlink) => steem.api.callAsync('get_content_replies', [ author, permlink ])
 
 class SteemService {
   start (opts) {
@@ -15,8 +13,8 @@ class SteemService {
     this.network = networks[opts.network]
 
     this.opts.parentPost = {
-      author: this.opts.account,
-      permlink: this.opts.account + '-topics'
+      author: 'tkbb.' + this.opts.account,
+      permlink: 'tokenbb-' + this.opts.account + '-topics'
     }
 
     steem.api.setOptions({ url: this.network.rpc })
@@ -120,7 +118,7 @@ class SteemService {
 
   _createConnectAPI () {
     var api = sc2.Initialize({
-      app: process.env.VUE_APP_STEEM_CONNECT_ACCOUNT,
+      app: 'tkbc.' + process.env.VUE_APP_ACCOUNT_NAME,
       callbackURL: process.env.BASE_URL,
       accessToken: 'access_token',
       scope: [ 'comment', 'vote' ]

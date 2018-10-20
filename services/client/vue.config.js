@@ -3,9 +3,8 @@ require('dotenv').config({ path: '../../.env' })
 var env = [
   'HOST_URL',
   'STEEM_NETWORK',
-  'STEEM_APP_ACCOUNT',
-  'STEEM_CONNECT_HOST',
-  'STEEM_CONNECT_ACCOUNT'
+  'ACCOUNT_NAME',
+  'STEEM_CONNECT_HOST'
 ]
 
 env.forEach(envVar => {

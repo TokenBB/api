@@ -9,13 +9,16 @@ input:
 steem:
 
 - create app account with $account_name 
-  (tkbb_ + $account_name)
+  (tkbb. + $account_name)
+- create base topics
+  - tokenbb- + $account_name + -topics
+
 
 
 steemconnect:
 
 - use app account to create steem connect app account
-  (tkbc_ + $account_name)
+  (tkbc. + $account_name)
 
 
 mysql:

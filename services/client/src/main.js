@@ -11,7 +11,7 @@ import './registerServiceWorker'
 Vue.config.productionTip = false
 
 steem.start({
-  account: process.env.VUE_APP_STEEM_APP_ACCOUNT,
+  account: process.env.VUE_APP_ACCOUNT_NAME,
   network: process.env.VUE_APP_STEEM_NETWORK
 })
 
