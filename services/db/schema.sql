@@ -1,5 +1,3 @@
-use tokenbb;
-
 create table categories(
   id int auto_increment primary key,
   name char(64)

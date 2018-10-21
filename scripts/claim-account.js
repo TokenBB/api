@@ -1,6 +1,6 @@
 var { Client, PrivateKey } = require('dsteem')
 
-const usage = `usage: node scripts/create-account <account> <wif>`
+const usage = `usage: node scripts/claim-account <account> <wif>`
 
 main()
 
