@@ -11,6 +11,8 @@ steem:
   (tkbb. + $account_name)
 - create base topics
   - tokenbb- + $account_name + -topics
+- transfer 3.000 STEEM (or current account_creation_fee) to app account
+
 
 steemconnect:
 
@@ -32,6 +34,7 @@ mysql:
 
 1. `create database $account_name`
 2. `grant all privileges on $account_name.* TO '$account_name + -service'@'%' identified by 'password';`
+3. `flush privileges;`
 
 http on host:
 
